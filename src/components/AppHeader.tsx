@@ -1,30 +1,22 @@
 import Link from "next/link";
 import { Flame, Settings as SettingsIcon } from "lucide-react";
-import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/server";
+import { getUserSettings, getWaterLog } from "@/lib/supabase/queries";
 import { todayInTimezone } from "@/lib/dates";
 import { WaterQuickAdd } from "@/components/WaterQuickAdd";
 
 export async function AppHeader({ title }: { title: string }) {
-  const supabase = await createClient();
   const {
     data: { user },
   } = await getAuthUser();
 
   if (!user) return null;
 
-  const { data: settings } = await supabase
-    .from("user_settings")
-    .select("timezone, water_goal_ml")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { data: settings } = await getUserSettings(user.id);
 
   const today = todayInTimezone(settings?.timezone ?? "UTC");
 
-  const { data: waterLog } = await supabase
-    .from("water_logs")
-    .select("amount_ml")
-    .eq("logged_date", today)
-    .maybeSingle();
+  const { data: waterLog } = await getWaterLog(user.id, today);
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-page/90 px-5 py-3.5 backdrop-blur-md">

@@ -1,5 +1,6 @@
 import { Zap } from "lucide-react";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { getUserSettings } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { WeeklyCalorieChart } from "@/components/WeeklyCalorieChart";
 import { MacroDonutChart } from "@/components/MacroDonutChart";
@@ -14,11 +15,7 @@ export default async function TrendsPage() {
     data: { user },
   } = await getAuthUser();
 
-  const { data: settings } = await supabase
-    .from("user_settings")
-    .select("timezone")
-    .eq("user_id", user!.id)
-    .maybeSingle();
+  const { data: settings } = await getUserSettings(user!.id);
 
   const today = todayInTimezone(settings?.timezone ?? "UTC");
   const startDate = addDays(today, -6);

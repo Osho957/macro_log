@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Calendar, Coffee, Sun, Moon, Apple } from "lucide-react";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { getUserSettings, getWaterLog } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { CalorieRing } from "@/components/CalorieRing";
 import { MacroRing } from "@/components/MacroRing";
@@ -25,11 +26,7 @@ export default async function DashboardPage({
     data: { user },
   } = await getAuthUser();
 
-  const { data: settings } = await supabase
-    .from("user_settings")
-    .select("timezone, water_goal_ml")
-    .eq("user_id", user!.id)
-    .maybeSingle();
+  const { data: settings } = await getUserSettings(user!.id);
 
   const today = todayInTimezone(settings?.timezone ?? "UTC");
   const { date } = await searchParams;
@@ -53,13 +50,7 @@ export default async function DashboardPage({
         .limit(1)
         .maybeSingle(),
       supabase.from("meals").select("id, name").order("sort_order"),
-      isToday
-        ? supabase
-            .from("water_logs")
-            .select("amount_ml")
-            .eq("logged_date", today)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
+      isToday ? getWaterLog(user!.id, today) : Promise.resolve({ data: null }),
     ]);
 
   const totals = (entries ?? []).reduce(

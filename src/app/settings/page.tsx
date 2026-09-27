@@ -1,4 +1,5 @@
 import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { getUserSettings } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { GoalsSliders } from "@/components/GoalsSliders";
 import { ManualGoalsForm } from "@/components/ManualGoalsForm";
@@ -14,13 +15,14 @@ export default async function SettingsPage() {
     data: { user },
   } = await getAuthUser();
 
-  const { data: settings } = await supabase
-    .from("user_settings")
-    .select(
-      "timezone, weight_unit, age, height_cm, sex, activity_level, goal_type, water_goal_ml",
-    )
-    .eq("user_id", user!.id)
-    .maybeSingle();
+  const [{ data: settings }, { data: weightLogs }] = await Promise.all([
+    getUserSettings(user!.id),
+    supabase
+      .from("weight_logs")
+      .select("id, logged_date, weight, unit")
+      .order("logged_date", { ascending: false })
+      .limit(10),
+  ]);
 
   const timezone = settings?.timezone ?? "UTC";
   const weightUnit = settings?.weight_unit ?? "kg";
@@ -33,12 +35,6 @@ export default async function SettingsPage() {
     .order("effective_date", { ascending: false })
     .limit(1)
     .maybeSingle();
-
-  const { data: weightLogs } = await supabase
-    .from("weight_logs")
-    .select("id, logged_date, weight, unit")
-    .order("logged_date", { ascending: false })
-    .limit(10);
 
   const profile = {
     sex: settings?.sex ?? null,
