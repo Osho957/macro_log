@@ -1,0 +1,115 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { NormalizedFood } from "@/types/food";
+import { createClient } from "@/lib/supabase/client";
+import { logFood } from "@/lib/nutrition";
+import { todayLocalDate } from "@/lib/dates";
+import { FoodSearchTab } from "@/components/FoodSearchTab";
+import { BarcodeTab } from "@/components/BarcodeTab";
+import { CustomFoodForm } from "@/components/CustomFoodForm";
+import { LogQuantityForm } from "@/components/LogQuantityForm";
+
+type Tab = "search" | "barcode" | "manual";
+
+interface Meal {
+  id: string;
+  name: string;
+}
+
+export function LogFoodClient({
+  userId,
+  meals,
+}: {
+  userId: string;
+  meals: Meal[];
+}) {
+  const router = useRouter();
+  const [tab, setTab] = useState<Tab>("search");
+  const [selectedFood, setSelectedFood] = useState<NormalizedFood | null>(
+    null,
+  );
+  const [barcodeNotice, setBarcodeNotice] = useState<string | null>(null);
+
+  async function handleConfirmLog(args: { mealId: string; quantity: number }) {
+    if (!selectedFood) return;
+    const supabase = createClient();
+    await logFood(supabase, {
+      userId,
+      food: selectedFood,
+      mealId: args.mealId,
+      loggedDate: todayLocalDate(),
+      quantity: args.quantity,
+    });
+    setSelectedFood(null);
+    router.push("/");
+    router.refresh();
+  }
+
+  if (selectedFood) {
+    return (
+      <LogQuantityForm
+        food={selectedFood}
+        meals={meals}
+        defaultMealId={meals[0]?.id ?? ""}
+        onCancel={() => setSelectedFood(null)}
+        onConfirm={handleConfirmLog}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-4 border-b border-black/10 text-sm dark:border-white/10">
+        {(
+          [
+            ["search", "Search"],
+            ["barcode", "Barcode"],
+            ["manual", "Manual"],
+          ] as [Tab, string][]
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            onClick={() => {
+              setTab(value);
+              setBarcodeNotice(null);
+            }}
+            className={`-mb-px border-b-2 px-1 pb-2 ${
+              tab === value
+                ? "border-black font-semibold dark:border-white"
+                : "border-transparent text-black/50 dark:text-white/50"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "search" && <FoodSearchTab onSelect={setSelectedFood} />}
+
+      {tab === "barcode" && (
+        <BarcodeTab
+          onFound={setSelectedFood}
+          onNotFound={(barcode) => {
+            setBarcodeNotice(
+              `No match found for barcode ${barcode}. Enter it manually below.`,
+            );
+            setTab("manual");
+          }}
+        />
+      )}
+
+      {tab === "manual" && (
+        <div className="space-y-3">
+          {barcodeNotice && (
+            <p className="rounded-md bg-black/5 p-2 text-sm dark:bg-white/10">
+              {barcodeNotice}
+            </p>
+          )}
+          <CustomFoodForm onSubmit={setSelectedFood} />
+        </div>
+      )}
+    </div>
+  );
+}

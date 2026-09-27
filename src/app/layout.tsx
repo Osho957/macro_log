@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { createClient } from "@/lib/supabase/server";
+import { NavBar } from "@/components/NavBar";
+import { TimezoneSync } from "@/components/TimezoneSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,13 +20,22 @@ export const metadata: Metadata = {
   description: "Personal calorie and macro tracker",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <div className="flex flex-1 flex-col">{children}</div>
+        {user && <NavBar />}
+        {user && <TimezoneSync />}
+      </body>
     </html>
   );
 }
