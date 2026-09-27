@@ -86,6 +86,8 @@ export async function logFood(
     protein_g: scaleNutrient(food.proteinG, amount, food.servingSize),
     carbs_g: scaleNutrient(food.carbsG, amount, food.servingSize),
     fat_g: scaleNutrient(food.fatG, amount, food.servingSize),
+    food_name: food.name,
+    food_brand: food.brand,
   });
 
   if (logError) throw logError;

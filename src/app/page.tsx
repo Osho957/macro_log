@@ -41,7 +41,7 @@ export default async function DashboardPage({
       supabase
         .from("log_entries")
         .select(
-          "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meal_id, meals(name), foods(name, brand)",
+          "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meal_id, food_name, food_brand, meals(name)",
         )
         .eq("logged_date", selectedDate)
         .order("created_at"),
@@ -236,17 +236,13 @@ export default async function DashboardPage({
               ) : (
                 <ul className="divide-y divide-border">
                   {group.entries.map((entry) => {
-                    const food = entry.foods as unknown as {
-                      name: string;
-                      brand: string | null;
-                    } | null;
                     return (
                       <li
                         key={entry.id}
                         className="flex items-center justify-between py-2 text-sm"
                       >
                         <span className="text-ink-primary">
-                          {food?.name ?? "Deleted food"}{" "}
+                          {entry.food_name ?? "Deleted food"}{" "}
                           <span className="text-ink-muted">
                             ({entry.quantity} {entry.unit})
                           </span>
