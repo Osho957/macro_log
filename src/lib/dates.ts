@@ -18,6 +18,13 @@ export function todayInTimezone(timeZone: string): string {
   }
 }
 
+export function addDays(isoDate: string, delta: number): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + delta);
+  return date.toISOString().slice(0, 10);
+}
+
 export function formatDisplayDate(isoDate: string): string {
   const [year, month, day] = isoDate.split("-").map(Number);
   const date = new Date(year, month - 1, day);
