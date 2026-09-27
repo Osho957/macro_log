@@ -18,6 +18,7 @@ interface Profile {
   age: number | null;
   height_cm: number | null;
   activity_level: ActivityLevel | null;
+  goal_type: GoalType | null;
 }
 
 const GOAL_PILLS: { value: GoalType; label: string; Icon: typeof TrendingDown }[] = [
@@ -44,10 +45,16 @@ export function GoalsSliders({
   initialMacros: { protein: number; carbs: number; fat: number } | null;
 }) {
   const router = useRouter();
-  const [goalType, setGoalType] = useState<GoalType>("maintain");
+  const [goalType, setGoalType] = useState<GoalType>(
+    profile.goal_type ?? "maintain",
+  );
   const [calorieTarget, setCalorieTarget] = useState(
     initialCalorieGoal ?? 2300,
   );
+  // Until a slider moves, show the saved grams as-is: manually entered
+  // macros don't necessarily add up to the calorie target, so deriving
+  // grams back from percentages would silently change them.
+  const [touched, setTouched] = useState(false);
 
   const weightKg =
     latestWeight != null
@@ -87,6 +94,7 @@ export function GoalsSliders({
   const [error, setError] = useState<string | null>(null);
 
   function handleProteinChange(value: number) {
+    setTouched(true);
     const remaining = 100 - value;
     const ratio = carbsPct + fatPct || 1;
     setProteinPct(value);
@@ -95,6 +103,7 @@ export function GoalsSliders({
   }
 
   function handleCarbsChange(value: number) {
+    setTouched(true);
     const remaining = 100 - value;
     const ratio = proteinPct + fatPct || 1;
     setCarbsPct(value);
@@ -103,6 +112,7 @@ export function GoalsSliders({
   }
 
   function handleFatChange(value: number) {
+    setTouched(true);
     const remaining = 100 - value;
     const ratio = proteinPct + carbsPct || 1;
     setFatPct(value);
@@ -110,10 +120,19 @@ export function GoalsSliders({
     setCarbsPct(remaining - Math.round((proteinPct / ratio) * remaining));
   }
 
-  const proteinG = Math.round((calorieTarget * (proteinPct / 100)) / 4);
-  const carbsG = Math.round((calorieTarget * (carbsPct / 100)) / 4);
-  const fatG = Math.round((calorieTarget * (fatPct / 100)) / 9);
+  const useSaved = !touched && initialMacros != null && initialTotal != null;
+  const proteinG = useSaved
+    ? Math.round(initialMacros!.protein)
+    : Math.round((calorieTarget * (proteinPct / 100)) / 4);
+  const carbsG = useSaved
+    ? Math.round(initialMacros!.carbs)
+    : Math.round((calorieTarget * (carbsPct / 100)) / 4);
+  const fatG = useSaved
+    ? Math.round(initialMacros!.fat)
+    : Math.round((calorieTarget * (fatPct / 100)) / 9);
   const sumPct = proteinPct + carbsPct + fatPct;
+  const macroKcal = proteinG * 4 + carbsG * 4 + fatG * 9;
+  const kcalMismatch = Math.abs(macroKcal - calorieTarget) > 50;
 
   const waterTargetMl = useMemo(
     () => (weightKg ? Math.round(weightKg * 35) : 3000),
@@ -202,7 +221,10 @@ export function GoalsSliders({
             max={3500}
             step={50}
             value={calorieTarget}
-            onChange={(e) => setCalorieTarget(Number(e.target.value))}
+            onChange={(e) => {
+              setTouched(true);
+              setCalorieTarget(Number(e.target.value));
+            }}
             className="w-full accent-accent"
           />
           <div className="flex justify-between text-[10px] text-ink-muted">
@@ -221,6 +243,14 @@ export function GoalsSliders({
             Total: {sumPct}%
           </span>
         </div>
+
+        {kcalMismatch && (
+          <p className="rounded-lg border border-status-warning/30 bg-status-warning/10 p-2 text-[11px] text-status-warning">
+            These macros add up to {macroKcal.toLocaleString("en-IN")} kcal,
+            but your calorie target is {calorieTarget.toLocaleString("en-IN")}.
+            Move a slider to rebalance them to the target.
+          </p>
+        )}
 
         <MacroSlider
           label="Protein"

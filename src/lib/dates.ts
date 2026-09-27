@@ -25,12 +25,15 @@ export function addDays(isoDate: string, delta: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+// Fixed locale + UTC so server and browser render identical text; the
+// device's default locale otherwise causes hydration mismatches.
 export function formatDisplayDate(isoDate: string): string {
   const [year, month, day] = isoDate.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString(undefined, {
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.toLocaleDateString("en-IN", {
     weekday: "short",
     month: "short",
     day: "numeric",
+    timeZone: "UTC",
   });
 }

@@ -114,6 +114,17 @@ export function ManualGoalsForm({
         </div>
       </div>
 
+      {(protein || carbs || fat) && (
+        <MacroKcalSummary
+          calories={Number(calories) || 0}
+          macroKcal={
+            (Number(protein) || 0) * 4 +
+            (Number(carbs) || 0) * 4 +
+            (Number(fat) || 0) * 9
+          }
+        />
+      )}
+
       {error && <p className="text-sm text-status-critical">{error}</p>}
 
       <button
@@ -124,5 +135,21 @@ export function ManualGoalsForm({
         {saving ? "Saving..." : saved ? "Saved!" : "Save custom goals"}
       </button>
     </form>
+  );
+}
+
+function MacroKcalSummary({
+  calories,
+  macroKcal,
+}: {
+  calories: number;
+  macroKcal: number;
+}) {
+  const mismatch = calories > 0 && Math.abs(macroKcal - calories) > 50;
+  return (
+    <p className={`text-xs ${mismatch ? "text-status-warning" : "text-ink-muted"}`}>
+      Macros add up to {Math.round(macroKcal)} kcal
+      {mismatch ? ` (target is ${calories})` : ""}
+    </p>
   );
 }
