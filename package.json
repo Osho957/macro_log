@@ -9,13 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@serwist/next": "^9.5.12",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.48.0",
     "next": "15.5.26",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "serwist": "^9.5.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
