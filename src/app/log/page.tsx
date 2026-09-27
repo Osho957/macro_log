@@ -12,10 +12,16 @@ export default async function LogFoodPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: meals } = await supabase
-    .from("meals")
-    .select("id, name")
-    .order("sort_order");
+  const [{ data: meals }, { data: recentFoods }] = await Promise.all([
+    supabase.from("meals").select("id, name").order("sort_order"),
+    supabase
+      .from("foods")
+      .select(
+        "id, source, external_id, name, brand, serving_size, serving_unit, calories, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, barcode",
+      )
+      .order("last_logged_at", { ascending: false })
+      .limit(15),
+  ]);
 
   const { meal } = await searchParams;
 
@@ -27,6 +33,23 @@ export default async function LogFoodPage({
           userId={user!.id}
           meals={meals ?? []}
           defaultMealId={meal}
+          recentFoods={(recentFoods ?? []).map((f) => ({
+            id: f.id,
+            source: f.source,
+            externalId: f.external_id,
+            name: f.name,
+            brand: f.brand,
+            servingSize: f.serving_size,
+            servingUnit: f.serving_unit,
+            calories: f.calories,
+            proteinG: f.protein_g,
+            carbsG: f.carbs_g,
+            fatG: f.fat_g,
+            fiberG: f.fiber_g,
+            sugarG: f.sugar_g,
+            sodiumMg: f.sodium_mg,
+            barcode: f.barcode,
+          }))}
         />
       </main>
     </>

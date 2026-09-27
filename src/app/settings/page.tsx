@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { GoalsSliders } from "@/components/GoalsSliders";
@@ -93,9 +92,7 @@ export default async function SettingsPage() {
         />
 
         <div className="flex items-center justify-between rounded-2xl border border-border bg-surface p-4">
-          <Link href="/library" className="text-sm font-semibold text-accent">
-            Food Library
-          </Link>
+          <span className="text-sm text-ink-muted">Account</span>
           <SignOutButton />
         </div>
       </main>

@@ -11,6 +11,7 @@ import { FoodSearchTab } from "@/components/FoodSearchTab";
 import { BarcodeTab } from "@/components/BarcodeTab";
 import { CustomFoodForm } from "@/components/CustomFoodForm";
 import { LogQuantityForm } from "@/components/LogQuantityForm";
+import { RecentFoodsList, type RecentFood } from "@/components/RecentFoodsList";
 
 interface Meal {
   id: string;
@@ -21,10 +22,12 @@ export function LogFoodClient({
   userId,
   meals,
   defaultMealId,
+  recentFoods,
 }: {
   userId: string;
   meals: Meal[];
   defaultMealId?: string;
+  recentFoods: RecentFood[];
 }) {
   const router = useRouter();
   const [activeMealId, setActiveMealId] = useState(
@@ -32,6 +35,7 @@ export function LogFoodClient({
   );
   const [scanning, setScanning] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [hasQuery, setHasQuery] = useState(false);
   const [selectedFood, setSelectedFood] = useState<NormalizedFood | null>(
     null,
   );
@@ -119,7 +123,12 @@ export function LogFoodClient({
           <FoodSearchTab
             onSelect={setSelectedFood}
             onScanClick={() => setScanning(true)}
+            onQueryChange={setHasQuery}
           />
+
+          {!hasQuery && (
+            <RecentFoodsList foods={recentFoods} onSelect={setSelectedFood} />
+          )}
 
           <div className="space-y-3">
             {barcodeNotice && (

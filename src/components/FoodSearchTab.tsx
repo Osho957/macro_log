@@ -7,9 +7,11 @@ import type { NormalizedFood } from "@/types/food";
 export function FoodSearchTab({
   onSelect,
   onScanClick,
+  onQueryChange,
 }: {
   onSelect: (food: NormalizedFood) => void;
   onScanClick: () => void;
+  onQueryChange?: (hasQuery: boolean) => void;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<NormalizedFood[]>([]);
@@ -18,6 +20,7 @@ export function FoodSearchTab({
 
   useEffect(() => {
     const trimmed = query.trim();
+    onQueryChange?.(trimmed.length > 0);
     if (trimmed.length < 2) {
       setResults([]);
       return;

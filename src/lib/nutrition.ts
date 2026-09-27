@@ -15,6 +15,13 @@ export function scaleNutrient(
   return Math.round(value * (amount / servingSize) * 100) / 100;
 }
 
+/** Stable, deterministic id for a custom food so re-adding the same name
+ * (by trimmed, case-insensitive match) updates the existing row instead of
+ * creating a duplicate. */
+function slugifyCustomFoodName(name: string) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 /**
  * Ensures a food exists in the user's personal `foods` library (inserting it
  * if this is the first time they've used this USDA/OFF/custom item), then
@@ -34,15 +41,18 @@ export async function logFood(
 ) {
   const { userId, food, mealId, loggedDate, amount } = args;
 
-  let foodId: string;
+  const externalId =
+    food.source === "custom"
+      ? slugifyCustomFoodName(food.name)
+      : food.externalId;
 
-  if (food.source === "custom") {
-    const { data, error } = await supabase
-      .from("foods")
-      .insert({
+  const { data, error } = await supabase
+    .from("foods")
+    .upsert(
+      {
         user_id: userId,
         source: food.source,
-        external_id: null,
+        external_id: externalId,
         name: food.name,
         brand: food.brand,
         serving_size: food.servingSize,
@@ -55,41 +65,15 @@ export async function logFood(
         sugar_g: food.sugarG,
         sodium_mg: food.sodiumMg,
         barcode: food.barcode,
-      })
-      .select("id")
-      .single();
+        last_logged_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,source,external_id" },
+    )
+    .select("id")
+    .single();
 
-    if (error) throw error;
-    foodId = data.id;
-  } else {
-    const { data, error } = await supabase
-      .from("foods")
-      .upsert(
-        {
-          user_id: userId,
-          source: food.source,
-          external_id: food.externalId,
-          name: food.name,
-          brand: food.brand,
-          serving_size: food.servingSize,
-          serving_unit: food.servingUnit,
-          calories: food.calories,
-          protein_g: food.proteinG,
-          carbs_g: food.carbsG,
-          fat_g: food.fatG,
-          fiber_g: food.fiberG,
-          sugar_g: food.sugarG,
-          sodium_mg: food.sodiumMg,
-          barcode: food.barcode,
-        },
-        { onConflict: "user_id,source,external_id" },
-      )
-      .select("id")
-      .single();
-
-    if (error) throw error;
-    foodId = data.id;
-  }
+  if (error) throw error;
+  const foodId = data.id;
 
   const { error: logError } = await supabase.from("log_entries").insert({
     user_id: userId,
