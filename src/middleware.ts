@@ -27,6 +27,19 @@ export async function middleware(request: NextRequest) {
     },
   );
 
+  const code = request.nextUrl.searchParams.get("code");
+  if (code) {
+    await supabase.auth.exchangeCodeForSession(code);
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    url.searchParams.delete("code");
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    return redirectResponse;
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
