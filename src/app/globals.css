@@ -1,18 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --page: #f8fafc;
-  --surface: #ffffff;
-  --ink-primary: #0f172a;
-  --ink-secondary: #475569;
-  --ink-muted: #94a3b8;
-  --border: rgba(15, 23, 42, 0.08);
-  --gridline: #e2e8f0;
+  color-scheme: dark;
 
-  --accent: #059669;
-  --accent-2: #10b981;
-  --accent-track: #d1fae5;
-  --accent-soft: #ecfdf5;
+  --page: #020617;
+  --surface: #0f172a;
+  --surface-2: rgba(15, 23, 42, 0.9);
+  --ink-primary: #ffffff;
+  --ink-secondary: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --border: rgba(30, 41, 59, 0.8);
+  --gridline: #1e293b;
+
+  --accent: #10b981;
+  --accent-2: #34d399;
+  --accent-track: #1e293b;
+  --accent-soft: rgba(16, 185, 129, 0.1);
 
   --status-good: #0ca30c;
   --status-warning: #fab219;
@@ -28,6 +31,7 @@
 @theme inline {
   --color-page: var(--page);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-ink-primary: var(--ink-primary);
   --color-ink-secondary: var(--ink-secondary);
   --color-ink-muted: var(--ink-muted);
@@ -53,26 +57,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page: #020617;
-    --surface: #0f172a;
-    --ink-primary: #f8fafc;
-    --ink-secondary: #cbd5e1;
-    --ink-muted: #94a3b8;
-    --border: rgba(148, 163, 184, 0.16);
-    --gridline: #1e293b;
-
-    --accent: #10b981;
-    --accent-2: #34d399;
-    --accent-track: #1e293b;
-    --accent-soft: rgba(16, 185, 129, 0.12);
-  }
-}
-
 body {
   background: var(--page);
   color: var(--ink-primary);
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI",
     sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }

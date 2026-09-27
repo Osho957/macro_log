@@ -1,7 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/AppHeader";
 import { LogFoodClient } from "@/components/LogFoodClient";
 
-export default async function LogFoodPage() {
+export default async function LogFoodPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ meal?: string }>;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -12,10 +17,18 @@ export default async function LogFoodPage() {
     .select("id, name")
     .order("sort_order");
 
+  const { meal } = await searchParams;
+
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-semibold text-ink-primary">Log Food</h1>
-      <LogFoodClient userId={user!.id} meals={meals ?? []} />
-    </main>
+    <>
+      <AppHeader title="Search & Log Food" />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-4">
+        <LogFoodClient
+          userId={user!.id}
+          meals={meals ?? []}
+          defaultMealId={meal}
+        />
+      </main>
+    </>
   );
 }

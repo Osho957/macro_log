@@ -2,36 +2,33 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Utensils, Plus, BarChart3, Target } from "lucide-react";
 
 const SIDE_LINKS = [
-  { href: "/", label: "Today", icon: "🏠" },
-  { href: "/diary", label: "Diary", icon: "📖" },
-  { href: "/library", label: "Library", icon: "🍎" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
+  { href: "/", label: "Diary", Icon: LayoutDashboard },
+  { href: "/log", label: "Log Food", Icon: Utensils },
+  { href: "/trends", label: "Trends", Icon: BarChart3 },
+  { href: "/settings", label: "Goals", Icon: Target },
 ];
 
 export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 border-t border-border bg-surface/90 backdrop-blur">
-      <div className="relative mx-auto flex max-w-md items-center justify-around px-2 py-2 text-xs">
-        {SIDE_LINKS.slice(0, 2).map((link) => (
-          <NavLink key={link.href} {...link} pathname={pathname} />
-        ))}
+    <nav className="sticky bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-page/95 px-3 backdrop-blur-lg">
+      <NavLink {...SIDE_LINKS[0]} pathname={pathname} />
+      <NavLink {...SIDE_LINKS[1]} pathname={pathname} />
 
-        <Link
-          href="/log"
-          aria-label="Log food"
-          className="-mt-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-accent to-accent-2 text-lg font-bold text-page shadow-lg shadow-accent/30 transition-transform active:scale-90"
-        >
-          +
-        </Link>
+      <Link
+        href="/log"
+        aria-label="Log food"
+        className="-mt-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-accent to-accent-2 text-page shadow-lg shadow-accent/30 transition-transform hover:-translate-y-0.5 active:scale-90"
+      >
+        <Plus className="h-6 w-6 stroke-[2.5]" />
+      </Link>
 
-        {SIDE_LINKS.slice(2).map((link) => (
-          <NavLink key={link.href} {...link} pathname={pathname} />
-        ))}
-      </div>
+      <NavLink {...SIDE_LINKS[2]} pathname={pathname} />
+      <NavLink {...SIDE_LINKS[3]} pathname={pathname} />
     </nav>
   );
 }
@@ -39,12 +36,12 @@ export function NavBar() {
 function NavLink({
   href,
   label,
-  icon,
+  Icon,
   pathname,
 }: {
   href: string;
   label: string;
-  icon: string;
+  Icon: typeof LayoutDashboard;
   pathname: string;
 }) {
   const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -52,11 +49,11 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`flex w-14 flex-col items-center gap-0.5 rounded-lg py-1 font-medium transition-colors ${
-        active ? "text-accent" : "text-ink-muted hover:text-ink-primary"
+      className={`flex w-16 flex-col items-center justify-center gap-1 py-1 font-semibold transition active:scale-95 ${
+        active ? "text-accent" : "text-ink-muted hover:text-ink-secondary"
       }`}
     >
-      <span className="text-base leading-none">{icon}</span>
+      <Icon className="h-5 w-5" />
       <span className="text-[10px]">{label}</span>
     </Link>
   );

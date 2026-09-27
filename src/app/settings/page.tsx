@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/AppHeader";
+import { GoalsSliders } from "@/components/GoalsSliders";
+import { GoalCalculator } from "@/components/GoalCalculator";
 import { SettingsForm } from "@/components/SettingsForm";
 import { WeightTracker } from "@/components/WeightTracker";
-import { GoalCalculator } from "@/components/GoalCalculator";
 import { SignOutButton } from "@/components/SignOutButton";
 import { todayInTimezone } from "@/lib/dates";
 
@@ -14,12 +17,13 @@ export default async function SettingsPage() {
   const { data: settings } = await supabase
     .from("user_settings")
     .select(
-      "timezone, weight_unit, age, height_cm, sex, activity_level, goal_type",
+      "timezone, weight_unit, age, height_cm, sex, activity_level, goal_type, water_goal_ml",
     )
     .eq("user_id", user!.id)
     .maybeSingle();
 
   const timezone = settings?.timezone ?? "UTC";
+  const weightUnit = settings?.weight_unit ?? "kg";
   const today = todayInTimezone(timezone);
 
   const { data: goals } = await supabase
@@ -36,40 +40,65 @@ export default async function SettingsPage() {
     .order("logged_date", { ascending: false })
     .limit(10);
 
+  const profile = {
+    sex: settings?.sex ?? null,
+    age: settings?.age ?? null,
+    height_cm: settings?.height_cm ?? null,
+    activity_level: settings?.activity_level ?? null,
+    goal_type: settings?.goal_type ?? null,
+  };
+  const latestWeight = weightLogs?.[0]?.weight ?? null;
+
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Settings</h1>
-        <SignOutButton />
-      </div>
+    <>
+      <AppHeader title="Target & Macro Split" />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-4">
+        <GoalsSliders
+          userId={user!.id}
+          timezone={timezone}
+          weightUnit={weightUnit}
+          profile={profile}
+          latestWeight={latestWeight}
+          initialCalorieGoal={goals?.calorie_goal ?? null}
+          initialMacros={
+            goals
+              ? {
+                  protein: goals.protein_goal_g ?? 0,
+                  carbs: goals.carbs_goal_g ?? 0,
+                  fat: goals.fat_goal_g ?? 0,
+                }
+              : null
+          }
+        />
 
-      <GoalCalculator
-        userId={user!.id}
-        timezone={timezone}
-        weightUnit={settings?.weight_unit ?? "kg"}
-        profile={{
-          sex: settings?.sex ?? null,
-          age: settings?.age ?? null,
-          height_cm: settings?.height_cm ?? null,
-          activity_level: settings?.activity_level ?? null,
-          goal_type: settings?.goal_type ?? null,
-        }}
-        latestWeight={weightLogs?.[0]?.weight ?? null}
-      />
+        <GoalCalculator
+          userId={user!.id}
+          timezone={timezone}
+          weightUnit={weightUnit}
+          profile={profile}
+          latestWeight={latestWeight}
+        />
 
-      <SettingsForm
-        userId={user!.id}
-        timezone={timezone}
-        weightUnit={settings?.weight_unit ?? "kg"}
-        goals={goals ?? null}
-      />
+        <WeightTracker
+          userId={user!.id}
+          timezone={timezone}
+          unit={weightUnit}
+          recentLogs={weightLogs ?? []}
+        />
 
-      <WeightTracker
-        userId={user!.id}
-        timezone={timezone}
-        unit={settings?.weight_unit ?? "kg"}
-        recentLogs={weightLogs ?? []}
-      />
-    </main>
+        <SettingsForm
+          userId={user!.id}
+          timezone={timezone}
+          weightUnit={weightUnit}
+        />
+
+        <div className="flex items-center justify-between rounded-2xl border border-border bg-surface p-4">
+          <Link href="/library" className="text-sm font-semibold text-accent">
+            Food Library
+          </Link>
+          <SignOutButton />
+        </div>
+      </main>
+    </>
   );
 }

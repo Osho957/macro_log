@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/AppHeader";
 import { FoodLibraryList } from "@/components/FoodLibraryList";
 
 export default async function LibraryPage() {
@@ -12,9 +13,11 @@ export default async function LibraryPage() {
     .order("name");
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-semibold">Food Library</h1>
-      <FoodLibraryList foods={foods ?? []} />
-    </main>
+    <>
+      <AppHeader title="Food Library" />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-4">
+        <FoodLibraryList foods={foods ?? []} />
+      </main>
+    </>
   );
 }

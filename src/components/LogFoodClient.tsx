@@ -21,9 +21,11 @@ interface Meal {
 export function LogFoodClient({
   userId,
   meals,
+  defaultMealId,
 }: {
   userId: string;
   meals: Meal[];
+  defaultMealId?: string;
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("search");
@@ -52,7 +54,7 @@ export function LogFoodClient({
       <LogQuantityForm
         food={selectedFood}
         meals={meals}
-        defaultMealId={meals[0]?.id ?? ""}
+        defaultMealId={defaultMealId ?? meals[0]?.id ?? ""}
         onCancel={() => setSelectedFood(null)}
         onConfirm={handleConfirmLog}
       />
