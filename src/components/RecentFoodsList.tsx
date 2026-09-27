@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { formatMacro } from "@/lib/nutrition";
 import type { NormalizedFood } from "@/types/food";
 
 export interface RecentFood extends NormalizedFood {
@@ -51,9 +52,9 @@ export function RecentFoodsList({
               </p>
               <p className="mt-0.5 text-xs text-ink-muted">
                 {food.servingSize}
-                {food.servingUnit} · <span className="text-carbs">C: {food.carbsG ?? 0}g</span>{" "}
-                · <span className="text-protein">P: {food.proteinG ?? 0}g</span>{" "}
-                · <span className="text-fat">F: {food.fatG ?? 0}g</span>
+                {food.servingUnit} · <span className="text-carbs">C: {formatMacro(food.carbsG)}g</span>{" "}
+                · <span className="text-protein">P: {formatMacro(food.proteinG)}g</span>{" "}
+                · <span className="text-fat">F: {formatMacro(food.fatG)}g</span>
               </p>
             </button>
             <div className="ml-3 flex shrink-0 items-center gap-3">

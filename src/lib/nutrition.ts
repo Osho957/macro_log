@@ -15,6 +15,14 @@ export function scaleNutrient(
   return Math.round(value * (amount / servingSize) * 100) / 100;
 }
 
+/** Formats a macro gram value to at most 1 decimal place for display
+ * (external food APIs often return long floats like 8.3333333333333). */
+export function formatMacro(value: number | null): string {
+  if (value == null) return "0";
+  const rounded = Math.round(value * 10) / 10;
+  return String(rounded);
+}
+
 /** Stable, deterministic id for a custom food so re-adding the same name
  * (by trimmed, case-insensitive match) updates the existing row instead of
  * creating a duplicate. */

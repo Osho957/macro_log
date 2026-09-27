@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, ScanLine } from "lucide-react";
 import type { NormalizedFood } from "@/types/food";
+import { formatMacro } from "@/lib/nutrition";
 
 export function FoodSearchTab({
   onSelect,
@@ -115,11 +116,11 @@ export function FoodSearchTab({
                 {food.servingUnit} serving
               </p>
               <p className="mt-1 text-[11px]">
-                <span className="text-carbs">C: {food.carbsG ?? 0}g</span>
+                <span className="text-carbs">C: {formatMacro(food.carbsG)}g</span>
                 {" · "}
-                <span className="text-protein">P: {food.proteinG ?? 0}g</span>
+                <span className="text-protein">P: {formatMacro(food.proteinG)}g</span>
                 {" · "}
-                <span className="text-fat">F: {food.fatG ?? 0}g</span>
+                <span className="text-fat">F: {formatMacro(food.fatG)}g</span>
               </p>
             </div>
             <div className="ml-3 shrink-0 text-right">
