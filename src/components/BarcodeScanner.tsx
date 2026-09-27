@@ -37,15 +37,38 @@ export function BarcodeScanner({
       });
       scannerRef.current = scanner;
 
-      try {
+      // A fixed pixel qrbox (e.g. 250x150) can end up larger than the
+      // actual video frame on a narrow phone viewport, which silently
+      // breaks detection. Sizing it as a fraction of the real viewfinder
+      // (per html5-qrcode's own recommended pattern) avoids that.
+      const qrboxFunction = (
+        viewfinderWidth: number,
+        viewfinderHeight: number,
+      ) => {
+        const width = Math.floor(viewfinderWidth * 0.85);
+        const height = Math.floor(viewfinderHeight * 0.4);
+        return { width, height };
+      };
+
+      async function tryStart(constraint: MediaTrackConstraints) {
         await scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 150 } },
+          constraint,
+          { fps: 10, qrbox: qrboxFunction, disableFlip: false },
           (decodedText) => {
             onDetected(decodedText);
           },
           undefined,
         );
+      }
+
+      try {
+        try {
+          await tryStart({ facingMode: { exact: "environment" } });
+        } catch {
+          // Some devices/browsers reject an "exact" constraint outright;
+          // fall back to a plain preference instead of failing entirely.
+          await tryStart({ facingMode: "environment" });
+        }
         if (!cancelled) setStarting(false);
       } catch {
         if (!cancelled) {
@@ -77,6 +100,7 @@ export function BarcodeScanner({
       <div
         id={SCANNER_ELEMENT_ID}
         className="mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-page"
+        style={{ minHeight: 280 }}
       />
       {starting && (
         <p className="text-center text-sm text-ink-muted">
