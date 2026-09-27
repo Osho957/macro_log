@@ -49,7 +49,7 @@ export function WeightTracker({
     setSaving(false);
 
     if (error) {
-      setError("Couldn't save. Please try again.");
+      setError(error.message);
       return;
     }
 

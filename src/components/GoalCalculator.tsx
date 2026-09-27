@@ -114,7 +114,12 @@ export function GoalCalculator({
     setSaving(false);
 
     if (settingsRes.error || goalsRes.error || weightRes.error) {
-      setError("Couldn't save. Please try again.");
+      setError(
+        settingsRes.error?.message ??
+          goalsRes.error?.message ??
+          weightRes.error?.message ??
+          "Couldn't save. Please try again.",
+      );
       return;
     }
 
