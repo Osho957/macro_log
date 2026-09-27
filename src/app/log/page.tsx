@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { LogFoodClient } from "@/components/LogFoodClient";
 
@@ -10,7 +10,7 @@ export default async function LogFoodPage({
   const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getAuthUser();
 
   const [{ data: meals }, { data: recentFoods }] = await Promise.all([
     supabase.from("meals").select("id, name").order("sort_order"),

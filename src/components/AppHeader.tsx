@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Flame, Settings as SettingsIcon } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { todayInTimezone } from "@/lib/dates";
 import { WaterQuickAdd } from "@/components/WaterQuickAdd";
 
@@ -8,7 +8,7 @@ export async function AppHeader({ title }: { title: string }) {
   const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getAuthUser();
 
   if (!user) return null;
 

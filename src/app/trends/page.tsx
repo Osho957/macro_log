@@ -1,5 +1,5 @@
 import { Zap } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { WeeklyCalorieChart } from "@/components/WeeklyCalorieChart";
 import { MacroDonutChart } from "@/components/MacroDonutChart";
@@ -12,7 +12,7 @@ export default async function TrendsPage() {
   const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getAuthUser();
 
   const { data: settings } = await supabase
     .from("user_settings")

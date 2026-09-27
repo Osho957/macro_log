@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -23,6 +24,22 @@ export async function createClient() {
           }
         },
       },
+      global: {
+        // Supabase reads are dynamic per-request data, never a static
+        // asset; without this Next's fetch layer can cache a GET to
+        // PostgREST and keep serving it after the underlying row changes.
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" }),
+      },
     },
   );
 }
+
+/**
+ * Cached per-request so multiple server components/layouts on the same
+ * request (layout, page, AppHeader, etc.) share one auth check instead of
+ * each making its own round trip to Supabase Auth.
+ */
+export const getAuthUser = cache(async () => {
+  const supabase = await createClient();
+  return supabase.auth.getUser();
+});

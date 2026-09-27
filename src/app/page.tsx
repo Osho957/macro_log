@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Calendar, Coffee, Sun, Moon, Apple } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { CalorieRing } from "@/components/CalorieRing";
 import { MacroRing } from "@/components/MacroRing";
@@ -23,7 +23,7 @@ export default async function DashboardPage({
   const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getAuthUser();
 
   const { data: settings } = await supabase
     .from("user_settings")

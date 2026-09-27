@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { GoalsSliders } from "@/components/GoalsSliders";
 import { ManualGoalsForm } from "@/components/ManualGoalsForm";
@@ -12,7 +12,7 @@ export default async function SettingsPage() {
   const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await getAuthUser();
 
   const { data: settings } = await supabase
     .from("user_settings")
