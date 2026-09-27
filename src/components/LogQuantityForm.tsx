@@ -32,8 +32,12 @@ export function LogQuantityForm({
     setSaving(true);
     try {
       await onConfirm({ mealId, quantity: amount });
-    } catch {
-      setError("Couldn't save this entry. Please try again.");
+    } catch (err) {
+      const message =
+        err && typeof err === "object" && "message" in err
+          ? String((err as { message: unknown }).message)
+          : "Couldn't save this entry. Please try again.";
+      setError(message);
       setSaving(false);
     }
   }
