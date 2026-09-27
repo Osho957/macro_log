@@ -84,6 +84,7 @@ export function GoalsSliders({
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleProteinChange(value: number) {
     const remaining = 100 - value;
@@ -121,10 +122,12 @@ export function GoalsSliders({
 
   async function handleSave() {
     setSaving(true);
+    setSaved(false);
+    setError(null);
     const supabase = createClient();
     const today = todayInTimezone(timezone);
 
-    await Promise.all([
+    const [goalsRes, settingsRes] = await Promise.all([
       supabase.from("daily_goals").upsert(
         {
           user_id: userId,
@@ -143,6 +146,16 @@ export function GoalsSliders({
     ]);
 
     setSaving(false);
+
+    if (goalsRes.error || settingsRes.error) {
+      setError(
+        goalsRes.error?.message ??
+          settingsRes.error?.message ??
+          "Couldn't save. Please try again.",
+      );
+      return;
+    }
+
     setSaved(true);
     router.refresh();
   }
@@ -239,6 +252,8 @@ export function GoalsSliders({
           min={15}
           max={45}
         />
+
+        {error && <p className="text-xs text-status-critical">{error}</p>}
 
         <button
           onClick={handleSave}

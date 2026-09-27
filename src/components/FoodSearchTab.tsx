@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, ScanLine } from "lucide-react";
 import type { NormalizedFood } from "@/types/food";
 
 export function FoodSearchTab({
   onSelect,
+  onScanClick,
 }: {
   onSelect: (food: NormalizedFood) => void;
+  onScanClick: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<NormalizedFood[]>([]);
@@ -50,8 +52,15 @@ export function FoodSearchTab({
           placeholder="Search oats, paneer, eggs, protein..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full rounded-2xl border border-border bg-page py-2.5 pr-3 pl-10 text-xs text-ink-primary shadow-inner outline-none focus:border-accent"
+          className="w-full rounded-2xl border border-border bg-page py-2.5 pr-20 pl-10 text-xs text-ink-primary shadow-inner outline-none focus:border-accent"
         />
+        <button
+          onClick={onScanClick}
+          className="absolute right-2 flex items-center gap-1 rounded-xl border border-border bg-surface px-2.5 py-1 text-[11px] font-medium text-ink-secondary transition-colors hover:border-accent/40"
+        >
+          <ScanLine className="h-3 w-3 text-accent" />
+          <span>Scan</span>
+        </button>
       </div>
 
       {loading && <p className="text-sm text-ink-muted">Searching...</p>}
