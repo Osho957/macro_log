@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import type { User } from "@supabase/supabase-js";
+import { cookies, headers } from "next/headers";
 import { cache } from "react";
 
 export async function createClient() {
@@ -38,8 +39,32 @@ export async function createClient() {
  * Cached per-request so multiple server components/layouts on the same
  * request (layout, page, AppHeader, etc.) share one auth check instead of
  * each making its own round trip to Supabase Auth.
+ *
+ * middleware.ts already validates the session for every request and
+ * forwards the result via x-user-id/x-user-email headers, so the common
+ * case here is just reading those - no second network call to Supabase
+ * for information middleware already confirmed moments earlier. Only
+ * falls back to a real getUser() call if those headers are missing (e.g.
+ * a request that somehow bypassed middleware).
  */
-export const getAuthUser = cache(async () => {
+export const getAuthUser = cache(async (): Promise<{
+  data: { user: Pick<User, "id" | "email"> | null };
+}> => {
+  const headerList = await headers();
+  const userId = headerList.get("x-user-id");
+
+  if (userId) {
+    return {
+      data: {
+        user: {
+          id: userId,
+          email: headerList.get("x-user-email") ?? undefined,
+        },
+      },
+    };
+  }
+
   const supabase = await createClient();
-  return supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+  return { data: { user: data.user } };
 });
