@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { getAuthUser } from "@/lib/supabase/server";
 import { NavBar } from "@/components/NavBar";
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <div className="flex flex-1 flex-col">{children}</div>
         {user && <NavBar />}
         {user && <TimezoneSync />}
+        <Analytics />
       </body>
     </html>
   );
