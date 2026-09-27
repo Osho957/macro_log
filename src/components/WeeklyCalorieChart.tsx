@@ -31,7 +31,7 @@ export function WeeklyCalorieChart({
         const y = height - barHeight;
         const over = goal ? day.calories > goal : false;
         return (
-          <g key={day.label}>
+          <g key={i}>
             <rect
               x={x}
               y={y}
