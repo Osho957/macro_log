@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Utensils, Plus, BarChart3, Target } from "lucide-react";
+import { LayoutDashboard, Utensils, BarChart3, Target } from "lucide-react";
 
-const SIDE_LINKS = [
+const LINKS = [
   { href: "/", label: "Diary", Icon: LayoutDashboard },
   { href: "/log", label: "Log Food", Icon: Utensils },
   { href: "/trends", label: "Trends", Icon: BarChart3 },
@@ -16,19 +16,9 @@ export function NavBar() {
 
   return (
     <nav className="sticky bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-page/95 px-3 backdrop-blur-lg">
-      <NavLink {...SIDE_LINKS[0]} pathname={pathname} />
-      <NavLink {...SIDE_LINKS[1]} pathname={pathname} />
-
-      <Link
-        href="/log"
-        aria-label="Log food"
-        className="-mt-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-accent to-accent-2 text-page shadow-lg shadow-accent/30 transition-transform hover:-translate-y-0.5 active:scale-90"
-      >
-        <Plus className="h-6 w-6 stroke-[2.5]" />
-      </Link>
-
-      <NavLink {...SIDE_LINKS[2]} pathname={pathname} />
-      <NavLink {...SIDE_LINKS[3]} pathname={pathname} />
+      {LINKS.map((link) => (
+        <NavLink key={link.href} {...link} pathname={pathname} />
+      ))}
     </nav>
   );
 }
