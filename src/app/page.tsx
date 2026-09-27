@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Calendar, Coffee, Sun, Moon, Apple } from "lucide-react";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
-import { getUserSettings, getWaterLog } from "@/lib/supabase/queries";
+import { getUserSettings, getWaterLog, getTodayFast } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { CalorieRing } from "@/components/CalorieRing";
 import { MacroRing } from "@/components/MacroRing";
 import { WaterTracker } from "@/components/WaterTracker";
 import { DeleteEntryButton } from "@/components/DeleteEntryButton";
-import { addDays, formatDisplayDate, todayInTimezone } from "@/lib/dates";
+import { addDays, formatDisplayDate } from "@/lib/dates";
 
 const MEAL_ICONS: Record<string, typeof Coffee> = {
   Breakfast: Coffee,
@@ -26,32 +26,40 @@ export default async function DashboardPage({
     data: { user },
   } = await getAuthUser();
 
-  const { data: settings } = await getUserSettings(user!.id);
-
-  const today = todayInTimezone(settings?.timezone ?? "UTC");
+  // Reads the timezone from a cookie TimezoneSync already set client-side,
+  // so this doesn't have to wait on a Supabase round trip before it can
+  // even start the queries below (which used to run in a second,
+  // sequential phase after the settings fetch resolved).
+  const today = await getTodayFast(user!.id);
   const { date } = await searchParams;
   const selectedDate = date ?? today;
   const isToday = selectedDate === today;
 
-  const [{ data: entries }, { data: goals }, { data: meals }, { data: waterLog }] =
-    await Promise.all([
-      supabase
-        .from("log_entries")
-        .select(
-          "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meal_id, food_name, food_brand, meals(name)",
-        )
-        .eq("logged_date", selectedDate)
-        .order("created_at"),
-      supabase
-        .from("daily_goals")
-        .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
-        .lte("effective_date", selectedDate)
-        .order("effective_date", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase.from("meals").select("id, name").order("sort_order"),
-      isToday ? getWaterLog(user!.id, today) : Promise.resolve({ data: null }),
-    ]);
+  const [
+    { data: entries },
+    { data: goals },
+    { data: meals },
+    { data: waterLog },
+    { data: settings },
+  ] = await Promise.all([
+    supabase
+      .from("log_entries")
+      .select(
+        "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meal_id, food_name, food_brand, meals(name)",
+      )
+      .eq("logged_date", selectedDate)
+      .order("created_at"),
+    supabase
+      .from("daily_goals")
+      .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
+      .lte("effective_date", selectedDate)
+      .order("effective_date", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase.from("meals").select("id, name").order("sort_order"),
+    isToday ? getWaterLog(user!.id, today) : Promise.resolve({ data: null }),
+    getUserSettings(user!.id),
+  ]);
 
   const totals = (entries ?? []).reduce(
     (acc, e) => ({

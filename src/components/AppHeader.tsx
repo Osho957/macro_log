@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Flame, Settings as SettingsIcon } from "lucide-react";
 import { getAuthUser } from "@/lib/supabase/server";
-import { getUserSettings, getWaterLog } from "@/lib/supabase/queries";
-import { todayInTimezone } from "@/lib/dates";
+import { getUserSettings, getWaterLog, getTodayFast } from "@/lib/supabase/queries";
 import { WaterQuickAdd } from "@/components/WaterQuickAdd";
 
 export async function AppHeader({ title }: { title: string }) {
@@ -12,11 +11,12 @@ export async function AppHeader({ title }: { title: string }) {
 
   if (!user) return null;
 
-  const { data: settings } = await getUserSettings(user.id);
+  const today = await getTodayFast(user.id);
 
-  const today = todayInTimezone(settings?.timezone ?? "UTC");
-
-  const { data: waterLog } = await getWaterLog(user.id, today);
+  const [{ data: settings }, { data: waterLog }] = await Promise.all([
+    getUserSettings(user.id),
+    getWaterLog(user.id, today),
+  ]);
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-page/90 px-5 py-3.5 backdrop-blur-md">

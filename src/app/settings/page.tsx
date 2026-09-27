@@ -1,5 +1,5 @@
 import { createClient, getAuthUser } from "@/lib/supabase/server";
-import { getUserSettings } from "@/lib/supabase/queries";
+import { getUserSettings, getTodayFast } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { GoalsSliders } from "@/components/GoalsSliders";
 import { ManualGoalsForm } from "@/components/ManualGoalsForm";
@@ -7,7 +7,6 @@ import { GoalCalculator } from "@/components/GoalCalculator";
 import { SettingsForm } from "@/components/SettingsForm";
 import { WeightTracker } from "@/components/WeightTracker";
 import { SignOutButton } from "@/components/SignOutButton";
-import { todayInTimezone } from "@/lib/dates";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -15,26 +14,27 @@ export default async function SettingsPage() {
     data: { user },
   } = await getAuthUser();
 
-  const [{ data: settings }, { data: weightLogs }] = await Promise.all([
-    getUserSettings(user!.id),
-    supabase
-      .from("weight_logs")
-      .select("id, logged_date, weight, unit")
-      .order("logged_date", { ascending: false })
-      .limit(10),
-  ]);
+  const today = await getTodayFast(user!.id);
+
+  const [{ data: settings }, { data: weightLogs }, { data: goals }] =
+    await Promise.all([
+      getUserSettings(user!.id),
+      supabase
+        .from("weight_logs")
+        .select("id, logged_date, weight, unit")
+        .order("logged_date", { ascending: false })
+        .limit(10),
+      supabase
+        .from("daily_goals")
+        .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
+        .lte("effective_date", today)
+        .order("effective_date", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
   const timezone = settings?.timezone ?? "UTC";
   const weightUnit = settings?.weight_unit ?? "kg";
-  const today = todayInTimezone(timezone);
-
-  const { data: goals } = await supabase
-    .from("daily_goals")
-    .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
-    .lte("effective_date", today)
-    .order("effective_date", { ascending: false })
-    .limit(1)
-    .maybeSingle();
 
   const profile = {
     sex: settings?.sex ?? null,

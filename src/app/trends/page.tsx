@@ -1,11 +1,11 @@
 import { Zap } from "lucide-react";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
-import { getUserSettings } from "@/lib/supabase/queries";
+import { getTodayFast } from "@/lib/supabase/queries";
 import { AppHeader } from "@/components/AppHeader";
 import { WeeklyCalorieChart } from "@/components/WeeklyCalorieChart";
 import { MacroDonutChart } from "@/components/MacroDonutChart";
 import { WeightTrendMini } from "@/components/WeightTrendMini";
-import { addDays, todayInTimezone } from "@/lib/dates";
+import { addDays } from "@/lib/dates";
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -15,9 +15,7 @@ export default async function TrendsPage() {
     data: { user },
   } = await getAuthUser();
 
-  const { data: settings } = await getUserSettings(user!.id);
-
-  const today = todayInTimezone(settings?.timezone ?? "UTC");
+  const today = await getTodayFast(user!.id);
   const startDate = addDays(today, -6);
 
   const [{ data: entries }, { data: goals }, { data: weightLogs }] =
