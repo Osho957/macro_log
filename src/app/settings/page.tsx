@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { SettingsForm } from "@/components/SettingsForm";
 import { WeightTracker } from "@/components/WeightTracker";
+import { GoalCalculator } from "@/components/GoalCalculator";
 import { SignOutButton } from "@/components/SignOutButton";
 import { todayInTimezone } from "@/lib/dates";
 
@@ -12,7 +13,9 @@ export default async function SettingsPage() {
 
   const { data: settings } = await supabase
     .from("user_settings")
-    .select("timezone, weight_unit")
+    .select(
+      "timezone, weight_unit, age, height_cm, sex, activity_level, goal_type",
+    )
     .eq("user_id", user!.id)
     .maybeSingle();
 
@@ -39,6 +42,20 @@ export default async function SettingsPage() {
         <h1 className="text-xl font-semibold">Settings</h1>
         <SignOutButton />
       </div>
+
+      <GoalCalculator
+        userId={user!.id}
+        timezone={timezone}
+        weightUnit={settings?.weight_unit ?? "kg"}
+        profile={{
+          sex: settings?.sex ?? null,
+          age: settings?.age ?? null,
+          height_cm: settings?.height_cm ?? null,
+          activity_level: settings?.activity_level ?? null,
+          goal_type: settings?.goal_type ?? null,
+        }}
+        latestWeight={weightLogs?.[0]?.weight ?? null}
+      />
 
       <SettingsForm
         userId={user!.id}

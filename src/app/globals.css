@@ -1,22 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --ink-primary: #0b0b0b;
-  --ink-secondary: #52514e;
-  --ink-muted: #898781;
-  --border: rgba(11, 11, 11, 0.1);
-  --gridline: #e1e0d9;
+  --page: #f8fafc;
+  --surface: #ffffff;
+  --ink-primary: #0f172a;
+  --ink-secondary: #475569;
+  --ink-muted: #94a3b8;
+  --border: rgba(15, 23, 42, 0.08);
+  --gridline: #e2e8f0;
 
-  --accent: #2a78d6;
-  --accent-track: #b7d3f6;
-  --accent-soft: #eaf1fc;
+  --accent: #059669;
+  --accent-2: #10b981;
+  --accent-track: #d1fae5;
+  --accent-soft: #ecfdf5;
 
   --status-good: #0ca30c;
   --status-warning: #fab219;
   --status-serious: #ec835a;
   --status-critical: #d03b3b;
+
+  --protein: #3b82f6;
+  --carbs: #f59e0b;
+  --fat: #ec4899;
+  --water: #22d3ee;
 }
 
 @theme inline {
@@ -29,6 +35,7 @@
   --color-gridline: var(--gridline);
 
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-accent-track: var(--accent-track);
   --color-accent-soft: var(--accent-soft);
 
@@ -37,23 +44,29 @@
   --color-status-serious: var(--status-serious);
   --color-status-critical: var(--status-critical);
 
+  --color-protein: var(--protein);
+  --color-carbs: var(--carbs);
+  --color-fat: var(--fat);
+  --color-water: var(--water);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --ink-primary: #ffffff;
-    --ink-secondary: #c3c2b7;
-    --ink-muted: #898781;
-    --border: rgba(255, 255, 255, 0.1);
-    --gridline: #2c2c2a;
+    --page: #020617;
+    --surface: #0f172a;
+    --ink-primary: #f8fafc;
+    --ink-secondary: #cbd5e1;
+    --ink-muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.16);
+    --gridline: #1e293b;
 
-    --accent: #3987e5;
-    --accent-track: #104281;
-    --accent-soft: rgba(57, 135, 229, 0.12);
+    --accent: #10b981;
+    --accent-2: #34d399;
+    --accent-track: #1e293b;
+    --accent-soft: rgba(16, 185, 129, 0.12);
   }
 }
 

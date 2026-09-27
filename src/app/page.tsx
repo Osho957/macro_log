@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/SignOutButton";
 import { CalorieRing } from "@/components/CalorieRing";
-import { MacroMeter } from "@/components/MacroMeter";
+import { MacroRing } from "@/components/MacroRing";
+import { WaterTracker } from "@/components/WaterTracker";
 import { todayInTimezone } from "@/lib/dates";
 
 export default async function DashboardPage() {
@@ -13,28 +14,34 @@ export default async function DashboardPage() {
 
   const { data: settings } = await supabase
     .from("user_settings")
-    .select("timezone")
+    .select("timezone, water_goal_ml")
     .eq("user_id", user!.id)
     .maybeSingle();
 
   const today = todayInTimezone(settings?.timezone ?? "UTC");
 
-  const [{ data: entries }, { data: goals }] = await Promise.all([
-    supabase
-      .from("log_entries")
-      .select(
-        "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meals(name), foods(name, brand)",
-      )
-      .eq("logged_date", today)
-      .order("created_at"),
-    supabase
-      .from("daily_goals")
-      .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
-      .lte("effective_date", today)
-      .order("effective_date", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
+  const [{ data: entries }, { data: goals }, { data: waterLog }] =
+    await Promise.all([
+      supabase
+        .from("log_entries")
+        .select(
+          "id, quantity, unit, calories, protein_g, carbs_g, fat_g, meals(name), foods(name, brand)",
+        )
+        .eq("logged_date", today)
+        .order("created_at"),
+      supabase
+        .from("daily_goals")
+        .select("calorie_goal, protein_goal_g, carbs_goal_g, fat_goal_g")
+        .lte("effective_date", today)
+        .order("effective_date", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("water_logs")
+        .select("amount_ml")
+        .eq("logged_date", today)
+        .maybeSingle(),
+    ]);
 
   const totals = (entries ?? []).reduce(
     (acc, e) => ({
@@ -46,6 +53,8 @@ export default async function DashboardPage() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 },
   );
 
+  const remaining = goals ? Math.max(0, goals.calorie_goal - totals.calories) : null;
+
   const entriesByMeal = new Map<string, typeof entries>();
   for (const entry of entries ?? []) {
     const mealName =
@@ -55,41 +64,92 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-ink-primary">Today</h1>
-          <p className="text-sm text-ink-muted">{user?.email}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+            Calorie Tracker
+          </p>
+          <h1 className="text-sm font-bold text-ink-primary">
+            Today&apos;s Diary
+          </h1>
         </div>
         <SignOutButton />
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <CalorieRing consumed={totals.calories} goal={goals?.calorie_goal ?? null} />
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-b from-surface to-page p-5 shadow-sm">
+        <div className="pointer-events-none absolute -top-8 -right-8 h-32 w-32 rounded-full bg-accent/10 blur-2xl" />
 
-        <div className="mt-5 flex gap-2">
-          <MacroMeter
-            label="Protein"
-            value={totals.protein}
-            goal={goals?.protein_goal_g}
-          />
-          <MacroMeter
-            label="Carbs"
-            value={totals.carbs}
-            goal={goals?.carbs_goal_g}
-          />
-          <MacroMeter label="Fat" value={totals.fat} goal={goals?.fat_goal_g} />
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+              {remaining != null ? "Calories remaining" : "Calories eaten"}
+            </p>
+            <div className="mt-0.5 flex items-baseline gap-1.5">
+              <span className="text-3xl font-extrabold tracking-tight text-ink-primary">
+                {remaining != null ? remaining : Math.round(totals.calories)}
+              </span>
+              <span className="text-xs text-ink-muted">
+                {remaining != null ? "kcal left" : "kcal"}
+              </span>
+            </div>
+          </div>
+
+          <CalorieRing consumed={totals.calories} goal={goals?.calorie_goal ?? null} />
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border pt-3 text-center">
+          <div className="rounded-xl bg-page/60 px-2 py-1.5">
+            <span className="block text-[10px] text-ink-muted">Goal</span>
+            <span className="text-xs font-bold text-ink-primary">
+              {goals ? goals.calorie_goal.toLocaleString() : "-"}
+            </span>
+          </div>
+          <div className="rounded-xl bg-page/60 px-2 py-1.5">
+            <span className="block text-[10px] text-ink-muted">Food</span>
+            <span className="text-xs font-bold text-accent">
+              {Math.round(totals.calories).toLocaleString()}
+            </span>
+          </div>
         </div>
       </div>
 
+      <div className="flex gap-2.5">
+        <MacroRing
+          label="Protein"
+          color="protein"
+          value={totals.protein}
+          goal={goals?.protein_goal_g}
+        />
+        <MacroRing
+          label="Carbs"
+          color="carbs"
+          value={totals.carbs}
+          goal={goals?.carbs_goal_g}
+        />
+        <MacroRing
+          label="Fat"
+          color="fat"
+          value={totals.fat}
+          goal={goals?.fat_goal_g}
+        />
+      </div>
+
+      <WaterTracker
+        userId={user!.id}
+        timezone={settings?.timezone ?? "UTC"}
+        goalMl={settings?.water_goal_ml ?? 3000}
+        initialAmountMl={waterLog?.amount_ml ?? 0}
+      />
+
       <Link
         href="/log"
-        className="rounded-xl bg-ink-primary px-4 py-3 text-center text-sm font-medium text-page shadow-sm transition-opacity hover:opacity-90"
+        className="rounded-xl bg-accent px-4 py-3 text-center text-sm font-bold text-page shadow-sm shadow-accent/20 transition-opacity hover:opacity-90"
       >
         + Log food
       </Link>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {entriesByMeal.size === 0 && (
           <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-ink-muted">
             Nothing logged yet today.
@@ -99,7 +159,7 @@ export default async function DashboardPage() {
         {Array.from(entriesByMeal.entries()).map(([mealName, mealEntries]) => (
           <div
             key={mealName}
-            className="overflow-hidden rounded-xl border border-border bg-surface"
+            className="overflow-hidden rounded-2xl border border-border bg-surface"
           >
             <h2 className="border-b border-border px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
               {mealName}
