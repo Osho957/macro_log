@@ -56,6 +56,7 @@ export default async function SettingsPage() {
         <ManualGoalsForm userId={user!.id} timezone={timezone} goals={goals ?? null} />
 
         <GoalsSliders
+          key={`${goals?.calorie_goal ?? 0}-${goals?.protein_goal_g ?? 0}-${goals?.carbs_goal_g ?? 0}-${goals?.fat_goal_g ?? 0}`}
           userId={user!.id}
           timezone={timezone}
           weightUnit={weightUnit}
