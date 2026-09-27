@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/SignOutButton";
+import { CalorieRing } from "@/components/CalorieRing";
+import { MacroMeter } from "@/components/MacroMeter";
 import { todayInTimezone } from "@/lib/dates";
 
 export default async function DashboardPage() {
@@ -46,71 +48,63 @@ export default async function DashboardPage() {
 
   const entriesByMeal = new Map<string, typeof entries>();
   for (const entry of entries ?? []) {
-    const mealName = (entry.meals as unknown as { name: string } | null)
-      ?.name ?? "Other";
+    const mealName =
+      (entry.meals as unknown as { name: string } | null)?.name ?? "Other";
     if (!entriesByMeal.has(mealName)) entriesByMeal.set(mealName, []);
     entriesByMeal.get(mealName)!.push(entry);
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Today</h1>
+        <div>
+          <h1 className="text-xl font-semibold text-ink-primary">Today</h1>
+          <p className="text-sm text-ink-muted">{user?.email}</p>
+        </div>
         <SignOutButton />
       </div>
-      <p className="text-sm text-black/60 dark:text-white/60">
-        Signed in as {user?.email}
-      </p>
 
-      <div className="rounded-xl border border-black/10 p-4 dark:border-white/10">
-        <p className="text-2xl font-semibold">
-          {Math.round(totals.calories)}
-          {goals && (
-            <span className="text-base font-normal text-black/50 dark:text-white/50">
-              {" "}
-              / {goals.calorie_goal} kcal
-            </span>
-          )}
-          {!goals && (
-            <span className="text-base font-normal text-black/50 dark:text-white/50">
-              {" "}
-              kcal
-            </span>
-          )}
-        </p>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-          <MacroStat
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <CalorieRing consumed={totals.calories} goal={goals?.calorie_goal ?? null} />
+
+        <div className="mt-5 flex gap-2">
+          <MacroMeter
             label="Protein"
             value={totals.protein}
             goal={goals?.protein_goal_g}
           />
-          <MacroStat
+          <MacroMeter
             label="Carbs"
             value={totals.carbs}
             goal={goals?.carbs_goal_g}
           />
-          <MacroStat label="Fat" value={totals.fat} goal={goals?.fat_goal_g} />
+          <MacroMeter label="Fat" value={totals.fat} goal={goals?.fat_goal_g} />
         </div>
       </div>
 
       <Link
         href="/log"
-        className="rounded-md bg-black px-3 py-2 text-center text-sm font-medium text-white dark:bg-white dark:text-black"
+        className="rounded-xl bg-ink-primary px-4 py-3 text-center text-sm font-medium text-page shadow-sm transition-opacity hover:opacity-90"
       >
         + Log food
       </Link>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {entriesByMeal.size === 0 && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-ink-muted">
             Nothing logged yet today.
           </p>
         )}
 
         {Array.from(entriesByMeal.entries()).map(([mealName, mealEntries]) => (
-          <div key={mealName}>
-            <h2 className="mb-1 text-sm font-semibold">{mealName}</h2>
-            <ul className="divide-y divide-black/10 dark:divide-white/10">
+          <div
+            key={mealName}
+            className="overflow-hidden rounded-xl border border-border bg-surface"
+          >
+            <h2 className="border-b border-border px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              {mealName}
+            </h2>
+            <ul className="divide-y divide-border">
               {mealEntries!.map((entry) => {
                 const food = entry.foods as unknown as {
                   name: string;
@@ -119,15 +113,15 @@ export default async function DashboardPage() {
                 return (
                   <li
                     key={entry.id}
-                    className="flex items-center justify-between py-2 text-sm"
+                    className="flex items-center justify-between px-4 py-3 text-sm"
                   >
-                    <span>
+                    <span className="text-ink-primary">
                       {food?.name ?? "Deleted food"}{" "}
-                      <span className="text-black/50 dark:text-white/50">
+                      <span className="text-ink-muted">
                         ({entry.quantity} {entry.unit})
                       </span>
                     </span>
-                    <span className="text-black/60 dark:text-white/60">
+                    <span className="font-medium text-ink-secondary">
                       {Math.round(Number(entry.calories))} kcal
                     </span>
                   </li>
@@ -138,24 +132,5 @@ export default async function DashboardPage() {
         ))}
       </div>
     </main>
-  );
-}
-
-function MacroStat({
-  label,
-  value,
-  goal,
-}: {
-  label: string;
-  value: number;
-  goal?: number | null;
-}) {
-  return (
-    <div className="rounded-md bg-black/5 p-2 text-center dark:bg-white/10">
-      <p className="font-medium">
-        {Math.round(value)}g{goal ? ` / ${goal}g` : ""}
-      </p>
-      <p className="text-black/50 dark:text-white/50">{label}</p>
-    </div>
   );
 }

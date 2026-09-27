@@ -69,24 +69,24 @@ export function WeightTracker({
           placeholder={`Today's weight (${unit})`}
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
-          className="flex-1 rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="flex-1 rounded-lg border border-border px-3 py-2 bg-page"
         />
         <button
           type="submit"
           disabled={saving}
-          className="rounded-md bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="rounded-lg bg-ink-primary px-3 py-2 text-sm font-medium text-page disabled:opacity-50 transition-opacity hover:opacity-90"
         >
           {saving ? "..." : "Log"}
         </button>
       </form>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-status-critical">{error}</p>}
 
       {recentLogs.length > 0 && (
-        <ul className="divide-y divide-black/10 text-sm dark:divide-white/10">
+        <ul className="divide-y divide-border text-sm">
           {recentLogs.map((log) => (
             <li key={log.id} className="flex justify-between py-1.5">
-              <span className="text-black/60 dark:text-white/60">
+              <span className="text-ink-muted">
                 {formatDisplayDate(log.logged_date)}
               </span>
               <span>

@@ -60,8 +60,8 @@ export function LogFoodClient({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-4 border-b border-black/10 text-sm dark:border-white/10">
+    <div className="space-y-5">
+      <div className="flex rounded-lg bg-page p-1 text-sm">
         {(
           [
             ["search", "Search"],
@@ -75,10 +75,10 @@ export function LogFoodClient({
               setTab(value);
               setBarcodeNotice(null);
             }}
-            className={`-mb-px border-b-2 px-1 pb-2 ${
+            className={`flex-1 rounded-lg py-1.5 font-medium transition-colors ${
               tab === value
-                ? "border-black font-semibold dark:border-white"
-                : "border-transparent text-black/50 dark:text-white/50"
+                ? "bg-surface text-ink-primary shadow-sm"
+                : "text-ink-muted"
             }`}
           >
             {label}
@@ -103,7 +103,7 @@ export function LogFoodClient({
       {tab === "manual" && (
         <div className="space-y-3">
           {barcodeNotice && (
-            <p className="rounded-md bg-black/5 p-2 text-sm dark:bg-white/10">
+            <p className="rounded-lg bg-accent-soft p-3 text-sm text-ink-secondary">
               {barcodeNotice}
             </p>
           )}

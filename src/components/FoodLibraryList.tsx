@@ -30,7 +30,7 @@ export function FoodLibraryList({ foods }: { foods: FoodRow[] }) {
 
   if (foods.length === 0) {
     return (
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-ink-muted">
         No foods yet. Anything you search, scan, or add manually while
         logging will show up here.
       </p>
@@ -38,7 +38,7 @@ export function FoodLibraryList({ foods }: { foods: FoodRow[] }) {
   }
 
   return (
-    <ul className="divide-y divide-black/10 dark:divide-white/10">
+    <ul className="divide-y divide-border">
       {foods.map((food) => (
         <li key={food.id} className="py-3">
           {editingId === food.id ? (
@@ -54,7 +54,7 @@ export function FoodLibraryList({ foods }: { foods: FoodRow[] }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">{food.name}</p>
-                <p className="text-xs text-black/50 dark:text-white/50">
+                <p className="text-xs text-ink-muted">
                   {food.brand ? `${food.brand} · ` : ""}
                   {food.calories} kcal per {food.serving_size}
                   {food.serving_unit}
@@ -73,7 +73,7 @@ export function FoodLibraryList({ foods }: { foods: FoodRow[] }) {
                 )}
                 <button
                   onClick={() => handleDelete(food.id)}
-                  className="text-red-600"
+                  className="text-status-critical"
                 >
                   Delete
                 </button>
@@ -123,45 +123,45 @@ function EditFoodForm({
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-black/20"
+        className="w-full rounded-lg border border-border px-2 py-1 text-sm bg-page"
       />
       <div className="flex gap-2">
         <input
           value={calories}
           onChange={(e) => setCalories(e.target.value)}
           placeholder="kcal"
-          className="w-full rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border px-2 py-1 text-sm bg-page"
         />
         <input
           value={proteinG}
           onChange={(e) => setProteinG(e.target.value)}
           placeholder="protein g"
-          className="w-full rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border px-2 py-1 text-sm bg-page"
         />
         <input
           value={carbsG}
           onChange={(e) => setCarbsG(e.target.value)}
           placeholder="carbs g"
-          className="w-full rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border px-2 py-1 text-sm bg-page"
         />
         <input
           value={fatG}
           onChange={(e) => setFatG(e.target.value)}
           placeholder="fat g"
-          className="w-full rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border px-2 py-1 text-sm bg-page"
         />
       </div>
       <div className="flex gap-2">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="rounded-md bg-black px-3 py-1 text-xs font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="rounded-lg bg-ink-primary px-3 py-1 text-xs font-medium text-page disabled:opacity-50 transition-opacity hover:opacity-90"
         >
           {saving ? "Saving..." : "Save"}
         </button>
         <button
           onClick={onCancel}
-          className="rounded-md border border-black/10 px-3 py-1 text-xs dark:border-white/10"
+          className="rounded-lg border border-border px-3 py-1 text-xs"
         >
           Cancel
         </button>

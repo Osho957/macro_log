@@ -41,11 +41,11 @@ export function LogQuantityForm({
   }
 
   return (
-    <div className="space-y-3 rounded-lg border border-black/10 p-4 dark:border-white/10">
+    <div className="space-y-3 rounded-lg border border-border p-4">
       <div>
         <p className="font-medium">{food.name}</p>
         {food.brand && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-ink-muted">
             {food.brand}
           </p>
         )}
@@ -57,7 +57,7 @@ export function LogQuantityForm({
           <select
             value={mealId}
             onChange={(e) => setMealId(e.target.value)}
-            className="w-full rounded-md border border-black/10 px-2 py-1.5 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border px-2 py-1.5 bg-page"
           >
             {meals.map((meal) => (
               <option key={meal.id} value={meal.id}>
@@ -77,29 +77,29 @@ export function LogQuantityForm({
             step="0.1"
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
-            className="w-full rounded-md border border-black/10 px-2 py-1.5 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border px-2 py-1.5 bg-page"
           />
         </div>
       </div>
 
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-ink-muted">
         {calories} kcal for {amount} {food.servingUnit} (this food is{" "}
         {food.calories} kcal per {food.servingSize} {food.servingUnit})
       </p>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-status-critical">{error}</p>}
 
       <div className="flex gap-2">
         <button
           onClick={handleConfirm}
           disabled={saving}
-          className="rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="rounded-lg bg-ink-primary px-3 py-1.5 text-sm font-medium text-page disabled:opacity-50 transition-opacity hover:opacity-90"
         >
           {saving ? "Saving..." : "Log it"}
         </button>
         <button
           onClick={onCancel}
-          className="rounded-md border border-black/10 px-3 py-1.5 text-sm dark:border-white/10"
+          className="rounded-lg border border-border px-3 py-1.5 text-sm"
         >
           Cancel
         </button>

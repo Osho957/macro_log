@@ -51,7 +51,7 @@ export default async function DiaryPage({
       <div className="flex items-center justify-between">
         <Link
           href={`/diary?date=${addDays(selectedDate, -1)}`}
-          className="rounded-md border border-black/10 px-3 py-1.5 text-sm dark:border-white/10"
+          className="rounded-lg border border-border px-3 py-1.5 text-sm"
         >
           ← Prev
         </Link>
@@ -62,7 +62,7 @@ export default async function DiaryPage({
           {selectedDate !== today && (
             <Link
               href="/diary"
-              className="text-xs text-black/50 underline dark:text-white/50"
+              className="text-xs text-ink-muted underline"
             >
               Jump to today
             </Link>
@@ -70,19 +70,19 @@ export default async function DiaryPage({
         </div>
         <Link
           href={`/diary?date=${addDays(selectedDate, 1)}`}
-          className="rounded-md border border-black/10 px-3 py-1.5 text-sm dark:border-white/10"
+          className="rounded-lg border border-border px-3 py-1.5 text-sm"
         >
           Next →
         </Link>
       </div>
 
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-ink-muted">
         {Math.round(totalCalories)} kcal total
       </p>
 
       <div className="space-y-4">
         {entriesByMeal.size === 0 && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-ink-muted">
             Nothing logged on this day.
           </p>
         )}
@@ -90,7 +90,7 @@ export default async function DiaryPage({
         {Array.from(entriesByMeal.entries()).map(([mealName, mealEntries]) => (
           <div key={mealName}>
             <h2 className="mb-1 text-sm font-semibold">{mealName}</h2>
-            <ul className="divide-y divide-black/10 dark:divide-white/10">
+            <ul className="divide-y divide-border">
               {mealEntries!.map((entry) => {
                 const food = entry.foods as unknown as {
                   name: string;
@@ -103,12 +103,12 @@ export default async function DiaryPage({
                   >
                     <span>
                       {food?.name ?? "Deleted food"}{" "}
-                      <span className="text-black/50 dark:text-white/50">
+                      <span className="text-ink-muted">
                         ({entry.quantity} {entry.unit})
                       </span>
                     </span>
                     <span className="flex items-center gap-3">
-                      <span className="text-black/60 dark:text-white/60">
+                      <span className="text-ink-muted">
                         {Math.round(Number(entry.calories))} kcal
                       </span>
                       <DeleteEntryButton entryId={entry.id} />

@@ -19,7 +19,7 @@ export function DeleteEntryButton({ entryId }: { entryId: string }) {
     <button
       onClick={handleDelete}
       disabled={deleting}
-      className="text-xs text-red-600 disabled:opacity-50"
+      className="text-xs text-status-critical disabled:opacity-50"
     >
       {deleting ? "..." : "Delete"}
     </button>

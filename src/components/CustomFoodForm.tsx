@@ -57,7 +57,7 @@ export function CustomFoodForm({
           required
           value={form.name}
           onChange={(e) => update("name", e.target.value)}
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
         />
       </div>
 
@@ -66,7 +66,7 @@ export function CustomFoodForm({
         <input
           value={form.brand}
           onChange={(e) => update("brand", e.target.value)}
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
         />
       </div>
 
@@ -78,7 +78,7 @@ export function CustomFoodForm({
             min={0}
             value={form.servingSize}
             onChange={(e) => update("servingSize", e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
         <div className="flex-1 space-y-1">
@@ -86,7 +86,7 @@ export function CustomFoodForm({
           <input
             value={form.servingUnit}
             onChange={(e) => update("servingUnit", e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export function CustomFoodForm({
           min={0}
           value={form.calories}
           onChange={(e) => update("calories", e.target.value)}
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
         />
       </div>
 
@@ -113,7 +113,7 @@ export function CustomFoodForm({
             min={0}
             value={form.proteinG}
             onChange={(e) => update("proteinG", e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
         <div className="flex-1 space-y-1">
@@ -123,7 +123,7 @@ export function CustomFoodForm({
             min={0}
             value={form.carbsG}
             onChange={(e) => update("carbsG", e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
         <div className="flex-1 space-y-1">
@@ -133,14 +133,14 @@ export function CustomFoodForm({
             min={0}
             value={form.fatG}
             onChange={(e) => update("fatG", e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
       </div>
 
       <button
         type="submit"
-        className="w-full rounded-md bg-black px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-black"
+        className="w-full rounded-lg bg-ink-primary px-3 py-2 text-sm font-medium text-page transition-opacity hover:opacity-90"
       >
         Continue
       </button>

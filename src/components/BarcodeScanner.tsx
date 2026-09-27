@@ -76,14 +76,14 @@ export function BarcodeScanner({
     <div className="space-y-3">
       <div
         id={SCANNER_ELEMENT_ID}
-        className="mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-black/5 dark:bg-white/5"
+        className="mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-page"
       />
       {starting && (
-        <p className="text-center text-sm text-black/60 dark:text-white/60">
+        <p className="text-center text-sm text-ink-muted">
           Starting camera...
         </p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-status-critical">{error}</p>}
 
       <form
         onSubmit={(e) => {
@@ -96,11 +96,11 @@ export function BarcodeScanner({
           value={manualCode}
           onChange={(e) => setManualCode(e.target.value)}
           placeholder="Or type barcode manually"
-          className="flex-1 rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="flex-1 rounded-lg border border-border px-3 py-2 bg-page"
         />
         <button
           type="submit"
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10"
+          className="rounded-lg border border-border px-3 py-2 text-sm"
         >
           Look up
         </button>

@@ -45,11 +45,11 @@ export function BarcodeTab({
     <div className="space-y-3">
       <BarcodeScanner onDetected={handleDetected} />
       {loading && (
-        <p className="text-sm text-black/60 dark:text-white/60">
+        <p className="text-sm text-ink-muted">
           Looking up product...
         </p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-status-critical">{error}</p>}
     </div>
   );
 }

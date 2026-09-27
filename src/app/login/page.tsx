@@ -64,13 +64,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-page px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl border border-black/10 p-6 dark:border-white/10"
+        className="w-full max-w-sm space-y-5 rounded-2xl border border-border bg-surface p-7 shadow-sm"
       >
-        <h1 className="text-xl font-semibold">Calorie Tracker</h1>
-        <div className="flex gap-4 text-sm">
+        <div className="space-y-1 text-center">
+          <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft text-lg">
+            🍽️
+          </div>
+          <h1 className="text-lg font-semibold text-ink-primary">
+            Calorie Tracker
+          </h1>
+          <p className="text-sm text-ink-muted">Track meals, stay on target</p>
+        </div>
+
+        <div className="flex rounded-lg bg-page p-1 text-sm">
           <button
             type="button"
             onClick={() => {
@@ -78,7 +87,11 @@ export default function LoginPage() {
               setError(null);
               setInfo(null);
             }}
-            className={mode === "sign-in" ? "font-semibold underline" : "text-black/50 dark:text-white/50"}
+            className={`flex-1 rounded-lg py-1.5 font-medium transition-colors ${
+              mode === "sign-in"
+                ? "bg-surface text-ink-primary shadow-sm"
+                : "text-ink-muted"
+            }`}
           >
             Sign in
           </button>
@@ -89,14 +102,18 @@ export default function LoginPage() {
               setError(null);
               setInfo(null);
             }}
-            className={mode === "sign-up" ? "font-semibold underline" : "text-black/50 dark:text-white/50"}
+            className={`flex-1 rounded-lg py-1.5 font-medium transition-colors ${
+              mode === "sign-up"
+                ? "bg-surface text-ink-primary shadow-sm"
+                : "text-ink-muted"
+            }`}
           >
             Create account
           </button>
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-sm font-medium text-ink-primary">
             Email
           </label>
           <input
@@ -106,12 +123,15 @@ export default function LoginPage() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-ink-primary"
+          >
             Password
           </label>
           <input
@@ -121,17 +141,17 @@ export default function LoginPage() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {info && <p className="text-sm text-green-700 dark:text-green-500">{info}</p>}
+        {error && <p className="text-sm text-status-critical">{error}</p>}
+        {info && <p className="text-sm text-status-good">{info}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-black px-3 py-2 font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="w-full rounded-lg bg-ink-primary px-3 py-2.5 font-medium text-page transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {loading
             ? "Please wait..."

@@ -14,7 +14,7 @@ export default async function LogFoodPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-semibold">Log Food</h1>
+      <h1 className="text-xl font-semibold text-ink-primary">Log Food</h1>
       <LogFoodClient userId={user!.id} meals={meals ?? []} />
     </main>
   );

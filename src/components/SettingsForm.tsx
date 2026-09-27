@@ -81,7 +81,7 @@ export function SettingsForm({
               min={0}
               value={calorieGoal}
               onChange={(e) => setCalorieGoal(e.target.value)}
-              className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+              className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
             />
           </div>
           <div className="flex gap-2">
@@ -92,7 +92,7 @@ export function SettingsForm({
                 min={0}
                 value={proteinGoal}
                 onChange={(e) => setProteinGoal(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+                className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
               />
             </div>
             <div className="flex-1 space-y-1">
@@ -102,7 +102,7 @@ export function SettingsForm({
                 min={0}
                 value={carbsGoal}
                 onChange={(e) => setCarbsGoal(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+                className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
               />
             </div>
             <div className="flex-1 space-y-1">
@@ -112,7 +112,7 @@ export function SettingsForm({
                 min={0}
                 value={fatGoal}
                 onChange={(e) => setFatGoal(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+                className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
               />
             </div>
           </div>
@@ -124,21 +124,21 @@ export function SettingsForm({
         <select
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-black/20"
+          className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
         >
           <option value="kg">kg</option>
           <option value="lb">lb</option>
         </select>
       </div>
 
-      <p className="text-xs text-black/50 dark:text-white/50">
+      <p className="text-xs text-ink-muted">
         Timezone: {timezone} (auto-detected from your device)
       </p>
 
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-md bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="w-full rounded-lg bg-ink-primary px-3 py-2 text-sm font-medium text-page disabled:opacity-50 transition-opacity hover:opacity-90"
       >
         {saving ? "Saving..." : saved ? "Saved" : "Save changes"}
       </button>
