@@ -23,17 +23,17 @@ export function LogQuantityForm({
   onConfirm: (args: { mealId: string; quantity: number }) => Promise<void>;
 }) {
   const [mealId, setMealId] = useState(defaultMealId);
-  const [quantity, setQuantity] = useState(1);
+  const [amount, setAmount] = useState(food.servingSize);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const calories = scaleNutrient(food.calories, quantity) ?? 0;
+  const calories = scaleNutrient(food.calories, amount, food.servingSize) ?? 0;
 
   async function handleConfirm() {
     setError(null);
     setSaving(true);
     try {
-      await onConfirm({ mealId, quantity });
+      await onConfirm({ mealId, quantity: amount });
     } catch {
       setError("Couldn't save this entry. Please try again.");
       setSaving(false);
@@ -69,21 +69,22 @@ export function LogQuantityForm({
 
         <div className="w-28 space-y-1">
           <label className="text-sm font-medium">
-            Qty ({food.servingUnit})
+            Amount ({food.servingUnit})
           </label>
           <input
             type="number"
             min={0}
             step="0.1"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
             className="w-full rounded-md border border-black/10 px-2 py-1.5 dark:border-white/10 dark:bg-black/20"
           />
         </div>
       </div>
 
       <p className="text-sm text-black/60 dark:text-white/60">
-        {calories} kcal for this entry
+        {calories} kcal for {amount} {food.servingUnit} (this food is{" "}
+        {food.calories} kcal per {food.servingSize} {food.servingUnit})
       </p>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

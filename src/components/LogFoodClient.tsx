@@ -40,7 +40,7 @@ export function LogFoodClient({
       food: selectedFood,
       mealId: args.mealId,
       loggedDate: todayLocalDate(),
-      quantity: args.quantity,
+      amount: args.quantity,
     });
     setSelectedFood(null);
     router.push("/");

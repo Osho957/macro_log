@@ -1,13 +1,18 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { NormalizedFood } from "@/types/food";
 
-/** Scales a per-serving nutrient value by how many servings were logged. */
+/**
+ * Scales a nutrient value (given per `servingSize`, e.g. per 100g) by the
+ * actual amount consumed, in the same unit as servingSize.
+ */
 export function scaleNutrient(
   value: number | null,
-  quantity: number,
+  amount: number,
+  servingSize: number,
 ): number | null {
   if (value == null) return null;
-  return Math.round(value * quantity * 100) / 100;
+  if (!servingSize) return null;
+  return Math.round(value * (amount / servingSize) * 100) / 100;
 }
 
 /**
@@ -23,10 +28,11 @@ export async function logFood(
     food: NormalizedFood;
     mealId: string;
     loggedDate: string;
-    quantity: number;
+    /** Amount consumed, in the same unit as food.servingUnit (e.g. grams). */
+    amount: number;
   },
 ) {
-  const { userId, food, mealId, loggedDate, quantity } = args;
+  const { userId, food, mealId, loggedDate, amount } = args;
 
   let foodId: string;
 
@@ -90,12 +96,12 @@ export async function logFood(
     food_id: foodId,
     meal_id: mealId,
     logged_date: loggedDate,
-    quantity,
+    quantity: amount,
     unit: food.servingUnit,
-    calories: scaleNutrient(food.calories, quantity),
-    protein_g: scaleNutrient(food.proteinG, quantity),
-    carbs_g: scaleNutrient(food.carbsG, quantity),
-    fat_g: scaleNutrient(food.fatG, quantity),
+    calories: scaleNutrient(food.calories, amount, food.servingSize),
+    protein_g: scaleNutrient(food.proteinG, amount, food.servingSize),
+    carbs_g: scaleNutrient(food.carbsG, amount, food.servingSize),
+    fat_g: scaleNutrient(food.fatG, amount, food.servingSize),
   });
 
   if (logError) throw logError;

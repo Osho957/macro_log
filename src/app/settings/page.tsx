@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { SettingsForm } from "@/components/SettingsForm";
+import { WeightTracker } from "@/components/WeightTracker";
 import { SignOutButton } from "@/components/SignOutButton";
 import { todayInTimezone } from "@/lib/dates";
 
@@ -26,6 +27,12 @@ export default async function SettingsPage() {
     .limit(1)
     .maybeSingle();
 
+  const { data: weightLogs } = await supabase
+    .from("weight_logs")
+    .select("id, logged_date, weight, unit")
+    .order("logged_date", { ascending: false })
+    .limit(10);
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-8">
       <div className="flex items-center justify-between">
@@ -38,6 +45,13 @@ export default async function SettingsPage() {
         timezone={timezone}
         weightUnit={settings?.weight_unit ?? "kg"}
         goals={goals ?? null}
+      />
+
+      <WeightTracker
+        userId={user!.id}
+        timezone={timezone}
+        unit={settings?.weight_unit ?? "kg"}
+        recentLogs={weightLogs ?? []}
       />
     </main>
   );
