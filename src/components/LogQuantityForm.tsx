@@ -17,7 +17,13 @@ export function LogQuantityForm({
   onCancel: () => void;
   onConfirm: (args: { mealId: string; quantity: number }) => Promise<void>;
 }) {
-  const sliderMax = Math.max(400, Math.round(food.servingSize * 3));
+  // Small-count units (piece, tbsp, etc.) need a much finer slider than
+  // gram/ml-based foods, where a step of 5g out of 400g makes sense.
+  const isSmallUnit = food.servingSize <= 20;
+  const sliderMax = isSmallUnit
+    ? Math.max(10, Math.round(food.servingSize * 5))
+    : Math.max(400, Math.round(food.servingSize * 3));
+  const sliderStep = isSmallUnit ? (food.servingSize <= 1 ? 0.5 : 1) : 5;
   const [amount, setAmount] = useState(food.servingSize);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +78,7 @@ export function LogQuantityForm({
           type="range"
           min={0}
           max={sliderMax}
-          step={5}
+          step={sliderStep}
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
           className="w-full accent-accent"

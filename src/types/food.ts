@@ -1,4 +1,4 @@
-export type FoodSource = "custom" | "usda" | "off";
+export type FoodSource = "custom" | "usda" | "off" | "common";
 
 export interface NormalizedFood {
   source: FoodSource;

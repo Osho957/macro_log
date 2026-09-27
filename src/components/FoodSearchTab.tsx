@@ -30,12 +30,34 @@ export function FoodSearchTab({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(
-          `/api/usda/search?q=${encodeURIComponent(trimmed)}`,
-        );
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Search failed");
-        setResults(data.results ?? []);
+        const [commonRes, indianRes, usdaRes] = await Promise.allSettled([
+          fetch(`/api/common/search?q=${encodeURIComponent(trimmed)}`).then(
+            (r) => r.json(),
+          ),
+          fetch(`/api/off/search?q=${encodeURIComponent(trimmed)}`).then(
+            (r) => r.json(),
+          ),
+          fetch(`/api/usda/search?q=${encodeURIComponent(trimmed)}`).then(
+            (r) => r.json(),
+          ),
+        ]);
+
+        const commonResults =
+          commonRes.status === "fulfilled" ? commonRes.value.results ?? [] : [];
+        const indianResults =
+          indianRes.status === "fulfilled" ? indianRes.value.results ?? [] : [];
+        const usdaResults =
+          usdaRes.status === "fulfilled" ? usdaRes.value.results ?? [] : [];
+
+        setResults([...commonResults, ...indianResults, ...usdaResults]);
+
+        if (
+          commonRes.status === "rejected" &&
+          indianRes.status === "rejected" &&
+          usdaRes.status === "rejected"
+        ) {
+          throw new Error("Search failed");
+        }
       } catch {
         setError("Search failed. Try again.");
       } finally {
@@ -77,9 +99,16 @@ export function FoodSearchTab({
             className="flex w-full items-start justify-between rounded-2xl border border-border bg-surface p-3.5 text-left transition-colors hover:border-accent/40"
           >
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-ink-primary">
-                {food.name}
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="truncate text-sm font-bold text-ink-primary">
+                  {food.name}
+                </p>
+                {food.source === "common" && (
+                  <span className="shrink-0 rounded-md bg-accent-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-accent">
+                    Common
+                  </span>
+                )}
+              </div>
               <p className="mt-0.5 text-xs text-ink-muted">
                 {food.brand ? `${food.brand} · ` : ""}
                 {food.servingSize}

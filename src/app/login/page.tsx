@@ -74,7 +74,7 @@ export default function LoginPage() {
             🍽️
           </div>
           <h1 className="text-lg font-semibold text-ink-primary">
-            Calorie Tracker
+            MacroLog
           </h1>
           <p className="text-sm text-ink-muted">Track meals, stay on target</p>
         </div>

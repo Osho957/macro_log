@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Calorie Tracker",
+  title: "MacroLog",
   description: "Personal calorie and macro tracker",
   manifest: "/manifest.json",
   icons: {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Calorie Tracker",
+    title: "MacroLog",
   },
 };
 

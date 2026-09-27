@@ -1,6 +1,6 @@
 {
-  "name": "Calorie Tracker",
-  "short_name": "CalTrack",
+  "name": "MacroLog",
+  "short_name": "MacroLog",
   "description": "Personal calorie and macro tracker",
   "start_url": "/",
   "scope": "/",

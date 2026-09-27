@@ -34,7 +34,7 @@ export async function AppHeader({ title }: { title: string }) {
         </div>
         <div>
           <span className="block text-xs font-semibold uppercase tracking-wider text-accent">
-            Calorie Tracker
+            MacroLog
           </span>
           <h1 className="text-sm font-bold leading-tight tracking-tight text-ink-primary">
             {title}
