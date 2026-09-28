@@ -41,6 +41,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// Every server-rendered page/query hits Supabase (ap-southeast-1,
+// Singapore). Without this, Vercel runs Node functions in its default
+// region (Washington D.C., USA), so every single Supabase round trip pays
+// for a US<->Singapore hop on top of the actual query. Running the
+// function itself in Singapore puts it right next to the database.
+export const preferredRegion = "sin1";
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const {
     data: { user },
