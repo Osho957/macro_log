@@ -75,6 +75,8 @@ export function CustomFoodForm({
           <label className="text-sm font-medium">Serving size</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.servingSize}
             onChange={(e) => update("servingSize", e.target.value)}
@@ -98,6 +100,8 @@ export function CustomFoodForm({
         <input
           required
           type="number"
+            inputMode="decimal"
+            step="any"
           min={0}
           value={form.calories}
           onChange={(e) => update("calories", e.target.value)}
@@ -110,6 +114,8 @@ export function CustomFoodForm({
           <label className="text-sm font-medium">Protein (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.proteinG}
             onChange={(e) => update("proteinG", e.target.value)}
@@ -120,6 +126,8 @@ export function CustomFoodForm({
           <label className="text-sm font-medium">Carbs (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.carbsG}
             onChange={(e) => update("carbsG", e.target.value)}
@@ -130,6 +138,8 @@ export function CustomFoodForm({
           <label className="text-sm font-medium">Fat (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={form.fatG}
             onChange={(e) => update("fatG", e.target.value)}

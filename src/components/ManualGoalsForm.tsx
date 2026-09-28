@@ -73,6 +73,8 @@ export function ManualGoalsForm({
         <label className="text-sm">Calories</label>
         <input
           type="number"
+            inputMode="decimal"
+            step="any"
           min={0}
           required
           value={calories}
@@ -86,6 +88,8 @@ export function ManualGoalsForm({
           <label className="text-xs text-protein">Protein (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
@@ -96,6 +100,8 @@ export function ManualGoalsForm({
           <label className="text-xs text-carbs">Carbs (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={carbs}
             onChange={(e) => setCarbs(e.target.value)}
@@ -106,6 +112,8 @@ export function ManualGoalsForm({
           <label className="text-xs text-fat">Fat (g)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={fat}
             onChange={(e) => setFat(e.target.value)}

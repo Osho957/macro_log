@@ -64,6 +64,7 @@ export function WeightTracker({
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="number"
+            inputMode="decimal"
           min={0}
           step="0.1"
           placeholder={`Today's weight (${unit})`}

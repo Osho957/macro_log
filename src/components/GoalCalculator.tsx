@@ -153,6 +153,8 @@ export function GoalCalculator({
           <label className="text-sm">Age</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={age}
             onChange={(e) => setAge(e.target.value)}
@@ -163,6 +165,8 @@ export function GoalCalculator({
           <label className="text-sm">Height (cm)</label>
           <input
             type="number"
+            inputMode="decimal"
+            step="any"
             min={0}
             value={heightCm}
             onChange={(e) => setHeightCm(e.target.value)}
@@ -173,8 +177,9 @@ export function GoalCalculator({
           <label className="text-sm">Weight ({weightUnit})</label>
           <input
             type="number"
-            min={0}
+            inputMode="decimal"
             step="0.1"
+            min={0}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
