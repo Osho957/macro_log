@@ -41,9 +41,6 @@ export function LogFoodClient({
   );
   const [barcodeNotice, setBarcodeNotice] = useState<string | null>(null);
 
-  const activeMealName =
-    meals.find((m) => m.id === activeMealId)?.name ?? "Meal";
-
   async function handleConfirmLog(args: { mealId: string; quantity: number }) {
     if (!selectedFood) return;
     const supabase = createClient();
@@ -63,8 +60,8 @@ export function LogFoodClient({
     return (
       <LogQuantityForm
         food={selectedFood}
-        mealId={activeMealId}
-        mealName={activeMealName}
+        meals={meals}
+        defaultMealId={activeMealId}
         onCancel={() => setSelectedFood(null)}
         onConfirm={handleConfirmLog}
       />

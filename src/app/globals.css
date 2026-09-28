@@ -64,3 +64,15 @@ body {
     sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* iOS Safari auto-zooms the page on focusing any input/select/textarea
+   whose computed font-size is under 16px. Several of ours use smaller
+   Tailwind text utilities for visual density, so this forces the
+   effective size back up specifically on focus, where it matters. */
+@media (max-width: 767px) {
+  input:focus,
+  select:focus,
+  textarea:focus {
+    font-size: 16px !important;
+  }
+}

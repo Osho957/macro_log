@@ -73,7 +73,7 @@ export default async function DashboardPage({
   );
 
   const remaining = goals
-    ? Math.max(0, goals.calorie_goal - totals.calories)
+    ? Math.round(Math.max(0, goals.calorie_goal - totals.calories) * 100) / 100
     : null;
 
   const entriesByMeal = new Map<

@@ -4,16 +4,21 @@ import { useState } from "react";
 import type { NormalizedFood } from "@/types/food";
 import { scaleNutrient } from "@/lib/nutrition";
 
+interface Meal {
+  id: string;
+  name: string;
+}
+
 export function LogQuantityForm({
   food,
-  mealId,
-  mealName,
+  meals,
+  defaultMealId,
   onCancel,
   onConfirm,
 }: {
   food: NormalizedFood;
-  mealId: string;
-  mealName: string;
+  meals: Meal[];
+  defaultMealId: string;
   onCancel: () => void;
   onConfirm: (args: { mealId: string; quantity: number }) => Promise<void>;
 }) {
@@ -25,8 +30,11 @@ export function LogQuantityForm({
     : Math.max(400, Math.round(food.servingSize * 3));
   const sliderStep = isSmallUnit ? (food.servingSize <= 1 ? 0.5 : 1) : 5;
   const [amount, setAmount] = useState(food.servingSize);
+  const [mealId, setMealId] = useState(defaultMealId);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const mealName = meals.find((m) => m.id === mealId)?.name ?? "Meal";
 
   const calories = scaleNutrient(food.calories, amount, food.servingSize) ?? 0;
   const carbs = scaleNutrient(food.carbsG, amount, food.servingSize) ?? 0;
@@ -65,6 +73,21 @@ export function LogQuantityForm({
         >
           ✕
         </button>
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-xs text-ink-muted">Meal</label>
+        <select
+          value={mealId}
+          onChange={(e) => setMealId(e.target.value)}
+          className="w-full rounded-lg border border-border bg-page px-3 py-2 text-sm text-ink-primary outline-none focus:border-accent"
+        >
+          {meals.map((meal) => (
+            <option key={meal.id} value={meal.id}>
+              {meal.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-1.5 rounded-xl border border-border bg-page p-3">
