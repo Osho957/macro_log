@@ -8,6 +8,7 @@ import { MacroRing } from "@/components/MacroRing";
 import { WaterTracker } from "@/components/WaterTracker";
 import { DeleteEntryButton } from "@/components/DeleteEntryButton";
 import { addDays, formatDisplayDate } from "@/lib/dates";
+import { formatMacro } from "@/lib/nutrition";
 
 const MEAL_ICONS: Record<string, typeof Coffee> = {
   Breakfast: Coffee,
@@ -240,13 +241,27 @@ export default async function DashboardPage({
                         key={entry.id}
                         className="flex items-center justify-between py-2 text-sm"
                       >
-                        <span className="text-ink-primary">
-                          {entry.food_name ?? "Deleted food"}{" "}
-                          <span className="text-ink-muted">
-                            ({entry.quantity} {entry.unit})
-                          </span>
-                        </span>
-                        <span className="flex items-center gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-ink-primary">
+                            {entry.food_name ?? "Deleted food"}
+                          </p>
+                          <p className="mt-0.5 text-xs text-ink-muted">
+                            {entry.quantity}
+                            {entry.unit} ·{" "}
+                            <span className="text-carbs">
+                              C: {formatMacro(entry.carbs_g)}g
+                            </span>{" "}
+                            ·{" "}
+                            <span className="text-protein">
+                              P: {formatMacro(entry.protein_g)}g
+                            </span>{" "}
+                            ·{" "}
+                            <span className="text-fat">
+                              F: {formatMacro(entry.fat_g)}g
+                            </span>
+                          </p>
+                        </div>
+                        <span className="ml-3 flex shrink-0 items-center gap-3">
                           <span className="font-medium text-ink-secondary">
                             {Math.round(Number(entry.calories))} kcal
                           </span>
