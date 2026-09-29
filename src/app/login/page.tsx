@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-type Mode = "sign-in" | "sign-up";
+type Mode = "sign-in" | "sign-up" | "forgot";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,6 +22,21 @@ export default function LoginPage() {
     setLoading(true);
 
     const supabase = createClient();
+
+    if (mode === "forgot") {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setInfo(
+        "If an account exists for that email, a reset link is on its way. Open it in this same browser.",
+      );
+      return;
+    }
 
     if (mode === "sign-up") {
       const { data, error } = await supabase.auth.signUp({
@@ -127,23 +142,39 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="space-y-1">
-          <label
-            htmlFor="password"
-            className="text-sm font-medium text-ink-primary"
+        {mode !== "forgot" && (
+          <div className="space-y-1">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-ink-primary"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
+            />
+          </div>
+        )}
+
+        {mode === "sign-in" && (
+          <button
+            type="button"
+            onClick={() => {
+              setMode("forgot");
+              setError(null);
+              setInfo(null);
+            }}
+            className="block text-sm text-ink-muted hover:text-ink-primary"
           >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-border bg-page px-3 py-2 text-ink-primary outline-none focus:border-accent"
-          />
-        </div>
+            Forgot password?
+          </button>
+        )}
 
         {error && <p className="text-sm text-status-critical">{error}</p>}
         {info && <p className="text-sm text-status-good">{info}</p>}
@@ -157,8 +188,24 @@ export default function LoginPage() {
             ? "Please wait..."
             : mode === "sign-up"
               ? "Create account"
-              : "Sign in"}
+              : mode === "forgot"
+                ? "Send reset link"
+                : "Sign in"}
         </button>
+
+        {mode === "forgot" && (
+          <button
+            type="button"
+            onClick={() => {
+              setMode("sign-in");
+              setError(null);
+              setInfo(null);
+            }}
+            className="block w-full text-center text-sm text-ink-muted hover:text-ink-primary"
+          >
+            Back to sign in
+          </button>
+        )}
       </form>
     </div>
   );

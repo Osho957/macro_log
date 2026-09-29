@@ -75,7 +75,7 @@ export async function middleware(request: NextRequest) {
   if (code) {
     await supabase.auth.exchangeCodeForSession(code);
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    if (url.pathname !== "/reset-password") url.pathname = "/";
     url.searchParams.delete("code");
     const redirectResponse = NextResponse.redirect(url);
     response.cookies.getAll().forEach((cookie) => {
